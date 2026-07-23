@@ -210,6 +210,12 @@ nav button.on{color:var(--txt);background:rgba(124,108,255,.18)}
 #onboard .lead{color:var(--sub);font-size:.9rem;margin-bottom:22px;line-height:1.5;word-break:keep-all}
 #onboard h2{font-size:.95rem;margin:20px 0 10px}
 .presetgrid{display:flex;flex-wrap:wrap;gap:8px}
+.scorerow{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:12px;padding:8px 12px;margin-bottom:8px}
+.scorerow .snm{flex:1;min-width:0;font-weight:700;font-size:.85rem}
+.scorerow .sin{width:64px}
+.scorerow .sin input{width:100%;background:#12162e;border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:16px;padding:8px;text-align:center;outline:none}
+.scorerow .arr{color:var(--sub);font-size:.8rem}
+.scorerow .lbl{font-size:.6rem;color:var(--sub);text-align:center;display:block;margin-bottom:2px}
 </style>
 </head>
 <body>
@@ -235,6 +241,10 @@ nav button.on{color:var(--txt);background:rgba(124,108,255,.18)}
   <div class="field" style="margin-top:12px;display:flex;gap:8px">
     <input type="text" id="ob_custom" placeholder="직접 과목 추가 (예: 제2외국어)" style="flex:1">
     <button class="btn mini" id="ob_addSubj" style="flex-shrink:0">추가</button>
+  </div>
+  <div id="ob_scoreWrap" style="display:none">
+    <h2>과목별 점수 <span style="font-size:.72rem;color:var(--sub);font-weight:500">(직전 시험 점수 → 이번 방학 목표 · 나중에 수정 가능)</span></h2>
+    <div id="ob_scores"></div>
   </div>
   <div class="notice" style="margin:16px 0"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:inherit;font-weight:700"><input type="checkbox" id="ob_seed" checked style="width:20px;height:20px"> 추천 학습 계획 자동으로 만들기 (선택 과목마다 개념→문제→주간테스트)</label></div>
   <button class="btn" id="ob_go">🚀 방학 퀘스트 시작하기!</button>
@@ -649,11 +659,12 @@ function renderHomeSubjects(){
   $("#homeSubjects").innerHTML=S.subjects.map(s=>{
     const est=estScore(s.id,tk); const pct=Math.min(100,est/s.goal*100);
     const n=S.plans.filter(p=>p.sid===s.id).length; const dn=ST.perSubjDone[s.id]||0;
-    return `<div class="subj"><div class="row1"><span style="font-size:1.05rem">${s.icon}</span><span class="name">${s.name}</span>
-        <span class="nums">${s.cur} → <b>${est}</b> / 목표 ${s.goal}</span></div>
+    return `<div class="subj" data-sid="${s.id}" style="cursor:pointer"><div class="row1"><span style="font-size:1.05rem">${s.icon}</span><span class="name">${s.name}</span>
+        <span class="nums">${s.cur} → <b>${est}</b> / 목표 ${s.goal} ✏️</span></div>
       <div class="sbar"><i style="width:${pct}%;background:linear-gradient(90deg,${s.color}88,${s.color})"></i></div>
-      <div class="row1" style="margin-top:4px"><span style="font-size:.68rem;color:var(--sub)">계획 ${dn}/${n} 완료</span></div></div>`;
+      <div class="row1" style="margin-top:4px"><span style="font-size:.68rem;color:var(--sub)">계획 ${dn}/${n} 완료 · 눌러서 점수 수정</span></div></div>`;
   }).join("");
+  document.querySelectorAll("#homeSubjects .subj").forEach(el=>{ el.onclick=()=>openSubjectForm(el.dataset.sid); });
 }
 function renderCal(){
   const t=today(); let html="";
@@ -848,16 +859,16 @@ function openSettings(){
   sheetHTML(`<h4>⚙️ 설정</h4><div class="sub">이름·방학 기간·과목을 언제든 바꿀 수 있어요.</div><div class="field"><label>이름 / 별명</label><input type="text" id="set_name" value="${esc(p.name||"")}"></div><div class="field"><label>학교급</label><div class="chiprow" id="set_level"><button class="chip${p.level==="중"?" on":""}" data-l="중">중학생</button><button class="chip${p.level==="고"?" on":""}" data-l="고">고등학생</button></div></div><div class="numrow"><div class="field"><label>방학 시작</label><input type="date" id="set_start" value="${p.vacStart}"></div><div class="field"><label>방학 종료</label><input type="date" id="set_end" value="${p.vacEnd}"></div></div><button class="btn" id="set_save">저장</button><h4 style="margin-top:20px">📚 과목 관리</h4><div id="set_subjects" style="margin:8px 0"></div><button class="btn ghost" id="set_addSubj">＋ 과목 추가</button><div style="height:14px"></div><button class="btn danger" id="set_reset">전체 초기화 (처음부터 다시)</button>`);
   let lvl=p.level;
   document.querySelectorAll("#set_level .chip").forEach(c=>c.onclick=()=>{ document.querySelectorAll("#set_level .chip").forEach(x=>x.classList.remove("on")); c.classList.add("on"); lvl=c.dataset.l; });
-  const rss=()=>{ $("#set_subjects").innerHTML=S.subjects.length?S.subjects.map(s=>`<div class="subrow"><span style="font-size:1.1rem">${s.icon}</span><span class="sn">${s.name} <span class="sm">(현재 ${s.cur}→목표 ${s.goal})</span></span><button data-e="${s.id}">✏️</button><button class="sdel" data-d="${s.id}">✕</button></div>`).join(""):`<div class="empty">과목이 없어요</div>`; document.querySelectorAll("#set_subjects [data-e]").forEach(b=>b.onclick=()=>openSubjectForm(b.dataset.e)); document.querySelectorAll("#set_subjects [data-d]").forEach(b=>b.onclick=()=>{ if(confirm("이 과목과 관련 계획을 삭제할까?")){ S.subjects=S.subjects.filter(x=>x.id!==b.dataset.d); S.plans=S.plans.filter(p=>p.sid!==b.dataset.d); save(); rss(); render(); } }); };
+  const rss=()=>{ $("#set_subjects").innerHTML=S.subjects.length?S.subjects.map(s=>`<div class="subrow"><span style="font-size:1.1rem">${s.icon}</span><span class="sn">${s.name} <span class="sm">(현재 ${s.cur}→목표 ${s.goal})</span></span><button data-e="${s.id}">✏️</button><button class="sdel" data-d="${s.id}">✕</button></div>`).join(""):`<div class="empty">과목이 없어요</div>`; document.querySelectorAll("#set_subjects [data-e]").forEach(b=>b.onclick=()=>openSubjectForm(b.dataset.e,true)); document.querySelectorAll("#set_subjects [data-d]").forEach(b=>b.onclick=()=>{ if(confirm("이 과목과 관련 계획을 삭제할까?")){ S.subjects=S.subjects.filter(x=>x.id!==b.dataset.d); S.plans=S.plans.filter(p=>p.sid!==b.dataset.d); save(); rss(); render(); } }); };
   rss();
   $("#set_save").onclick=()=>{ p.name=$("#set_name").value.trim(); p.level=lvl; const st=$("#set_start").value, en=$("#set_end").value; if(st) p.vacStart=st; if(en) p.vacEnd=en; save(); recalcDates(); closeSheet(); render(); toast("설정 저장 완료!"); };
-  $("#set_addSubj").onclick=()=>openSubjectForm(null);
+  $("#set_addSubj").onclick=()=>openSubjectForm(null,true);
   $("#set_reset").onclick=()=>{ if(confirm("모든 기록이 삭제되고 처음 화면으로 돌아가요. 계속할까?")){ localStorage.removeItem(KEY); location.reload(); } };
 }
-function openSubjectForm(sid){
+function openSubjectForm(sid,fromSettings){
   const s=sid?S.subjects.find(x=>x.id===sid):null;
-  sheetHTML(`<h4>${s?"✏️ 과목 수정":"＋ 새 과목"}</h4><div class="field"><label>이모지</label><input type="text" id="sf_icon" value="${s?s.icon:"📘"}" maxlength="4"></div><div class="field"><label>과목 이름</label><input type="text" id="sf_name" value="${s?esc(s.name):""}" placeholder="예: 국어"></div><div class="numrow"><div class="field"><label>현재 점수</label><input type="number" id="sf_cur" min="0" max="100" value="${s?s.cur:70}"></div><div class="field"><label>목표 점수</label><input type="number" id="sf_goal" min="0" max="100" value="${s?s.goal:90}"></div></div><button class="btn" id="sf_save">${s?"수정 저장":"과목 추가"}</button>`);
-  $("#sf_save").onclick=()=>{ const name=$("#sf_name").value.trim(); if(!name){ toast("과목 이름을 입력해줘!"); return; } const icon=$("#sf_icon").value.trim()||"📘"; const cur=Math.max(0,Math.min(100,+$("#sf_cur").value||0)); const goal=Math.max(0,Math.min(100,+$("#sf_goal").value||0)); if(s){ s.name=name; s.icon=icon; s.cur=cur; s.goal=goal; } else { const ns=newSubject(name,icon); ns.cur=cur; ns.goal=goal; S.subjects.push(ns); } save(); render(); openSettings(); toast(s?"과목 수정 완료!":"과목 추가 완료!"); };
+  sheetHTML(`<h4>${s?"✏️ 과목 점수 · 정보 수정":"＋ 새 과목"}</h4><div class="sub">직전 시험 점수(현재)와 이번 방학 목표 점수를 입력해요.</div><div class="field"><label>이모지</label><input type="text" id="sf_icon" value="${s?s.icon:"📘"}" maxlength="4"></div><div class="field"><label>과목 이름</label><input type="text" id="sf_name" value="${s?esc(s.name):""}" placeholder="예: 국어"></div><div class="numrow"><div class="field"><label>현재 점수 (직전 시험)</label><input type="number" id="sf_cur" inputmode="numeric" min="0" max="100" value="${s?s.cur:70}"></div><div class="field"><label>목표 점수</label><input type="number" id="sf_goal" inputmode="numeric" min="0" max="100" value="${s?s.goal:90}"></div></div><button class="btn" id="sf_save">${s?"수정 저장":"과목 추가"}</button>`);
+  $("#sf_save").onclick=()=>{ const name=$("#sf_name").value.trim(); if(!name){ toast("과목 이름을 입력해줘!"); return; } const icon=$("#sf_icon").value.trim()||"📘"; const cur=Math.max(0,Math.min(100,+$("#sf_cur").value||0)); const goal=Math.max(0,Math.min(100,+$("#sf_goal").value||0)); if(s){ s.name=name; s.icon=icon; s.cur=cur; s.goal=goal; } else { const ns=newSubject(name,icon); ns.cur=cur; ns.goal=goal; S.subjects.push(ns); } save(); closeSheet(); render(); if(fromSettings) openSettings(); toast(s?"점수 수정 완료!":"과목 추가 완료!"); };
 }
 
 function esc(s){ return (s||"").replace(/"/g,"&quot;"); }
@@ -880,17 +891,25 @@ function initOnboard(){
   const t=today(); $("#ob_start").value=fmt(t); $("#ob_end").value=fmt(new Date(t.getTime()+30*DAY_MS));
   renderObSubjects();
   document.querySelectorAll("#ob_level .chip").forEach(c=>c.onclick=()=>{ document.querySelectorAll("#ob_level .chip").forEach(x=>x.classList.remove("on")); c.classList.add("on"); obLevel=c.dataset.l; obSubs=[]; renderObSubjects(); });
-  $("#ob_addSubj").onclick=()=>{ const v=$("#ob_custom").value.trim(); if(!v)return; obSubs.push({name:v,icon:"📘",on:true}); $("#ob_custom").value=""; renderObSubjects(); };
+  $("#ob_addSubj").onclick=()=>{ const v=$("#ob_custom").value.trim(); if(!v)return; if(obSubs.some(x=>x.name===v)){ toast("이미 있는 과목이에요"); return; } obSubs.push({name:v,icon:"📘",on:true,cur:70,goal:90}); $("#ob_custom").value=""; renderObSubjects(); };
   $("#ob_go").onclick=finishOnboard;
 }
 function renderObSubjects(){
   const presets=PRESETS[obLevel]; const map={};
-  presets.forEach(([n,ic])=>{ const ex=obSubs.find(x=>x.name===n); map[n]={name:n,icon:ic,on:ex?ex.on:["국어","영어","수학"].includes(n)}; });
-  obSubs.forEach(x=>{ if(!map[x.name]) map[x.name]={name:x.name,icon:x.icon,on:x.on}; });
+  presets.forEach(([n,ic])=>{ const ex=obSubs.find(x=>x.name===n); map[n]={name:n,icon:ic,on:ex?ex.on:["국어","영어","수학"].includes(n),cur:ex?ex.cur:70,goal:ex?ex.goal:90}; });
+  obSubs.forEach(x=>{ if(!map[x.name]) map[x.name]={name:x.name,icon:x.icon,on:x.on,cur:x.cur!=null?x.cur:70,goal:x.goal!=null?x.goal:90}; });
   const arr=Object.values(map);
   $("#ob_subjects").innerHTML=arr.map(s=>`<button class="chip${s.on?" on":""}" data-n="${esc(s.name)}">${s.icon} ${s.name}</button>`).join("");
-  obSubs=arr.map(s=>({name:s.name,icon:s.icon,on:s.on}));
-  document.querySelectorAll("#ob_subjects .chip").forEach(b=>b.onclick=()=>{ const n=b.dataset.n; const it=obSubs.find(x=>x.name===n); it.on=!it.on; b.classList.toggle("on",it.on); });
+  obSubs=arr.map(s=>({name:s.name,icon:s.icon,on:s.on,cur:s.cur,goal:s.goal}));
+  document.querySelectorAll("#ob_subjects .chip").forEach(b=>b.onclick=()=>{ const n=b.dataset.n; const it=obSubs.find(x=>x.name===n); it.on=!it.on; b.classList.toggle("on",it.on); renderObScores(); });
+  renderObScores();
+}
+function renderObScores(){
+  const wrap=$("#ob_scoreWrap"); const chosen=obSubs.filter(x=>x.on);
+  if(!chosen.length){ wrap.style.display="none"; $("#ob_scores").innerHTML=""; return; }
+  wrap.style.display="";
+  $("#ob_scores").innerHTML=chosen.map(s=>`<div class="scorerow" data-n="${esc(s.name)}"><span style="font-size:1.05rem">${s.icon}</span><span class="snm">${s.name}</span><div class="sin"><span class="lbl">현재</span><input type="number" inputmode="numeric" min="0" max="100" data-k="cur" value="${s.cur}"></div><span class="arr">→</span><div class="sin"><span class="lbl">목표</span><input type="number" inputmode="numeric" min="0" max="100" data-k="goal" value="${s.goal}"></div></div>`).join("");
+  document.querySelectorAll("#ob_scores .scorerow").forEach(row=>{ const n=row.dataset.n; row.querySelectorAll("input").forEach(inp=>{ inp.oninput=()=>{ const it=obSubs.find(x=>x.name===n); if(it){ const v=Math.max(0,Math.min(100,+inp.value||0)); it[inp.dataset.k]=v; } }; }); });
 }
 function finishOnboard(){
   const name=$("#ob_name").value.trim(); const grade=$("#ob_grade").value; const st=$("#ob_start").value, en=$("#ob_end").value;
@@ -898,7 +917,7 @@ function finishOnboard(){
   if(!chosen.length){ toast("과목을 하나 이상 선택해줘!"); return; }
   if(!st||!en||parse(en)<parse(st)){ toast("방학 기간을 올바르게 입력해줘!"); return; }
   S.profile={name,level:obLevel,grade:+grade,vacStart:st,vacEnd:en,setup:true};
-  S.subjects=chosen.map((c,i)=>({id:uid()+i,name:c.name,icon:c.icon,color:PALETTE[i%PALETTE.length],cur:70,goal:90}));
+  S.subjects=chosen.map((c,i)=>({id:uid()+i,name:c.name,icon:c.icon,color:PALETTE[i%PALETTE.length],cur:c.cur!=null?c.cur:70,goal:c.goal!=null?c.goal:90}));
   recalcDates();
   if($("#ob_seed").checked){ S.subjects.forEach(sub=>{ buildSeedPlans(sub,VS).forEach(p=>S.plans.push(p)); }); }
   save();
