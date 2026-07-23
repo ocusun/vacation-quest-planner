@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>방학 퀘스트 플래너 🏆</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root{
+  --bg:#0f1226; --card:#1a1f3d; --card2:#232a52; --line:#2e3768;
+  --txt:#eef0ff; --sub:#9aa3d0; --accent:#7c6cff; --accent2:#4ecdc4;
+  --gold:#ffd166; --pink:#ff6b9d; --green:#4ade80; --red:#ff7b7b; --orange:#ffa94d;
+  --radius:20px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{
+  font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  background:var(--bg); color:var(--txt); min-height:100vh;
+  background-image:radial-gradient(ellipse 80% 50% at 50% -10%,rgba(124,108,255,.25),transparent),
+                   radial-gradient(ellipse 60% 40% at 90% 110%,rgba(78,205,196,.12),transparent);
+  padding-bottom:calc(84px + env(safe-area-inset-bottom));
+}
+.wrap{max-width:680px;margin:0 auto;padding:16px 16px 24px}
+@media(min-width:768px){.wrap{max-width:760px;padding:24px}}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.hello{font-size:1.15rem;font-weight:800;min-width:0}
+.hello small{display:block;font-size:.78rem;color:var(--sub);font-weight:500;margin-top:2px}
+.topright{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.dday{background:linear-gradient(135deg,var(--accent),var(--pink));padding:8px 14px;border-radius:999px;font-weight:800;font-size:.85rem;box-shadow:0 4px 16px rgba(124,108,255,.4);white-space:nowrap}
+.gear{background:var(--card2);border:1px solid var(--line);border-radius:12px;width:40px;height:38px;font-size:1.1rem;cursor:pointer;color:var(--txt);flex-shrink:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:14px}
+.card h3{font-size:.95rem;margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.card h3 .tag{margin-left:auto;font-size:.7rem;color:var(--sub);font-weight:500}
+.quote{background:linear-gradient(135deg,#2b2564,#1a1f3d);border:1px solid #3d3a7d;position:relative;overflow:hidden}
+.quote::before{content:"❝";position:absolute;top:-18px;right:8px;font-size:6rem;opacity:.12}
+.quote p{font-size:1.02rem;font-weight:700;line-height:1.55;word-break:keep-all}
+.quote span{display:block;margin-top:8px;color:var(--sub);font-size:.8rem}
+.lvlrow{display:flex;align-items:center;gap:14px}
+.lvlbadge{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;color:#3d2b00;flex-shrink:0;box-shadow:0 4px 14px rgba(255,209,102,.35)}
+.lvlbadge b{font-size:1.3rem;line-height:1}
+.lvlbadge small{font-size:.6rem;font-weight:700}
+.lvlinfo{flex:1;min-width:0}
+.lvlinfo .title{font-weight:800;font-size:1rem}
+.lvlinfo .xp{color:var(--sub);font-size:.78rem;margin:4px 0 6px}
+.bar{height:12px;background:#12162e;border-radius:999px;overflow:hidden;position:relative}
+.bar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--orange));transition:width .6s cubic-bezier(.22,1,.36,1)}
+.coinbar{display:flex;align-items:center;gap:8px;margin-top:14px;background:linear-gradient(135deg,rgba(255,209,102,.16),rgba(255,169,77,.1));border:1px solid rgba(255,209,102,.35);border-radius:14px;padding:10px 14px;cursor:pointer}
+.coinbar .ci{font-size:1.2rem}
+.coinbar b{font-size:1.15rem;color:var(--gold)}
+.coinbar .cl{font-size:.72rem;color:var(--sub)}
+.coinbar .cgo{margin-left:auto;font-size:.72rem;color:var(--gold);font-weight:800;white-space:nowrap}
+.streakrow{display:flex;gap:10px;margin-top:14px}
+.pill{flex:1;background:var(--card2);border-radius:14px;padding:10px;text-align:center}
+.pill b{display:block;font-size:1.05rem}
+.pill span{font-size:.66rem;color:var(--sub)}
+.shieldrow{display:flex;align-items:center;gap:8px;margin-top:10px;background:var(--card2);border-radius:12px;padding:10px 12px;font-size:.78rem}
+.shieldrow b{color:var(--accent2)}
+.shieldrow button{margin-left:auto}
+.subj{margin-bottom:14px}
+.subj:last-child{margin-bottom:0}
+.subj .row1{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.subj .name{font-weight:800;font-size:.9rem}
+.subj .nums{margin-left:auto;font-size:.78rem;color:var(--sub)}
+.subj .nums b{color:var(--txt);font-size:.9rem}
+.sbar{height:14px;background:#12162e;border-radius:999px;overflow:hidden;position:relative}
+.sbar>i{display:block;height:100%;border-radius:999px;transition:width .8s cubic-bezier(.22,1,.36,1)}
+.qitem{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;border:1px solid transparent;transition:.2s;user-select:none}
+.qitem:active{transform:scale(.98)}
+.qitem.done{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08)}
+.qitem .chk{width:28px;height:28px;border-radius:10px;border:2px solid var(--sub);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.95rem;transition:.2s}
+.qitem.done .chk{background:var(--green);border-color:var(--green);color:#0a2712}
+.qitem .qtxt{flex:1;min-width:0}
+.qitem .qtxt b{font-size:.9rem;display:block;word-break:keep-all}
+.qitem.done .qtxt b{opacity:.75}
+.qitem .qtxt span{font-size:.7rem;color:var(--sub);display:block;margin-top:2px;word-break:keep-all}
+.qitem .qtxt .rec{color:var(--accent2);font-weight:700}
+.qitem .xpv{font-size:.72rem;font-weight:800;color:var(--gold);flex-shrink:0}
+.qacts{display:flex;gap:5px;flex-shrink:0}
+.qacts button{border:none;background:#12162e;width:28px;height:28px;border-radius:9px;font-size:.8rem;cursor:pointer;line-height:1;padding:0}
+.qacts .qdel{background:rgba(255,123,123,.15);color:var(--red)}
+.qprog{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.qprog .bar{flex:1}
+.qprog b{font-size:.85rem;white-space:nowrap}
+.perfect{background:linear-gradient(135deg,rgba(255,209,102,.15),rgba(255,107,157,.15));border:1px dashed var(--gold);border-radius:14px;padding:12px;text-align:center;font-size:.85rem;font-weight:700;margin-top:4px}
+.typeb{font-size:.62rem;padding:2px 7px;border-radius:999px;font-weight:800;flex-shrink:0}
+.t-p{background:rgba(124,108,255,.2);color:#b4aaff}
+.t-c{background:rgba(78,205,196,.2);color:var(--accent2)}
+.t-t{background:rgba(255,107,157,.2);color:var(--pink)}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal .d{aspect-ratio:1;border-radius:10px;background:var(--card2);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.62rem;color:var(--sub)}
+.cal .d b{font-size:.78rem;color:var(--txt)}
+.cal .d.full{background:rgba(74,222,128,.25);border:1px solid rgba(74,222,128,.5)}
+.cal .d.part{background:rgba(255,209,102,.18);border:1px solid rgba(255,209,102,.4)}
+.cal .d.miss{opacity:.4}
+.cal .d.today{outline:2px solid var(--accent);outline-offset:1px}
+.cal .d.future{opacity:.55}
+.callegend{display:flex;gap:12px;margin-top:10px;font-size:.68rem;color:var(--sub);flex-wrap:wrap}
+.callegend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.badge{background:var(--card2);border-radius:14px;padding:12px 8px;text-align:center}
+.badge .ic{font-size:1.7rem;filter:grayscale(1);opacity:.35}
+.badge.on .ic{filter:none;opacity:1}
+.badge b{display:block;font-size:.68rem;margin-top:6px;word-break:keep-all}
+.badge span{font-size:.6rem;color:var(--sub)}
+.badge.on{border:1px solid rgba(255,209,102,.4)}
+.subtabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.subtabs::-webkit-scrollbar{display:none}
+.subtab{flex-shrink:0;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-family:inherit;font-weight:700;font-size:.8rem;padding:9px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.subtab.on{background:linear-gradient(135deg,var(--accent),var(--pink));border-color:transparent}
+.plangroup{margin-bottom:14px}
+.plangroup .pdate{font-size:.72rem;color:var(--sub);font-weight:800;margin:0 4px 6px;letter-spacing:.03em}
+.plangroup .pdate.istoday{color:var(--gold)}
+.pitem{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:14px;padding:12px;margin-bottom:8px;cursor:pointer}
+.pitem.pdone{opacity:.65;border:1px solid rgba(74,222,128,.35)}
+.pitem .ptxt{flex:1;min-width:0}
+.pitem .ptxt b{font-size:.85rem;display:block;word-break:keep-all}
+.pitem .ptxt span{font-size:.68rem;color:var(--sub);word-break:keep-all}
+.pitem .del{border:none;background:rgba(255,123,123,.15);color:var(--red);width:30px;height:30px;border-radius:10px;font-size:.9rem;cursor:pointer;flex-shrink:0}
+.btn{display:block;width:100%;border:none;background:linear-gradient(135deg,var(--accent),var(--pink));color:#fff;font-weight:800;font-size:.95rem;padding:14px;border-radius:14px;cursor:pointer;font-family:inherit;margin-top:6px}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+.btn.mini{width:auto;display:inline-block;padding:9px 14px;font-size:.78rem;margin:0}
+.btn.danger{background:rgba(255,123,123,.15);color:var(--red);border:1px solid rgba(255,123,123,.3)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:.72rem;color:var(--sub);font-weight:800;margin-bottom:6px}
+.field input[type=text],.field input[type=number],.field input[type=date],.field select,.field textarea{
+  width:100%;background:#12162e;border:1px solid var(--line);border-radius:12px;color:var(--txt);
+  font-family:inherit;font-size:16px;padding:12px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--accent)}
+.chiprow{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:#12162e;color:var(--txt);font-family:inherit;font-size:.8rem;font-weight:700;padding:9px 13px;border-radius:999px;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent)}
+.stars{display:flex;gap:6px;justify-content:center}
+.stars button{border:none;background:none;font-size:2rem;cursor:pointer;filter:grayscale(1);opacity:.35;transition:.15s}
+.stars button.on{filter:none;opacity:1;transform:scale(1.1)}
+.numrow{display:flex;gap:10px}
+.numrow .field{flex:1}
+#overlay{position:fixed;inset:0;background:rgba(5,7,20,.7);backdrop-filter:blur(3px);z-index:80;display:none}
+#overlay.show{display:block}
+#sheet{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-radius:24px 24px 0 0;border-top:1px solid var(--line);z-index:90;padding:20px 18px calc(20px + env(safe-area-inset-bottom));transform:translateY(110%);transition:.35s cubic-bezier(.22,1,.36,1);max-height:88vh;overflow-y:auto}
+#sheet.show{transform:none}
+#sheet .grip{width:44px;height:5px;border-radius:99px;background:var(--line);margin:0 auto 14px}
+#sheet h4{font-size:1rem;margin-bottom:4px;word-break:keep-all}
+#sheet .sub{font-size:.75rem;color:var(--sub);margin-bottom:14px;word-break:keep-all}
+@media(min-width:768px){#sheet{max-width:560px;left:50%;transform:translate(-50%,110%)}#sheet.show{transform:translate(-50%,0)}}
+.chartwrap{background:#12162e;border-radius:14px;padding:10px 8px 4px;margin-top:8px}
+.chartwrap svg{width:100%;height:auto;display:block}
+.statrow{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.stat{flex:1;min-width:70px;background:var(--card2);border-radius:12px;padding:8px;text-align:center}
+.stat b{display:block;font-size:.92rem}
+.stat span{font-size:.62rem;color:var(--sub)}
+.memo{background:var(--card2);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.memo b{font-size:.75rem}
+.memo p{font-size:.8rem;margin-top:3px;word-break:keep-all}
+.memo span{font-size:.65rem;color:var(--sub)}
+.bigcoin{font-size:2.2rem;font-weight:900;color:var(--gold);margin:6px 0}
+.rwd{display:flex;align-items:center;gap:12px;background:var(--card2);border-radius:16px;padding:12px 14px;margin-bottom:10px}
+.rwd.afford{border:1px solid rgba(255,209,102,.4)}
+.rwd .rem{font-size:1.7rem;flex-shrink:0}
+.rwd .rinfo{flex:1;min-width:0}
+.rwd .rinfo b{font-size:.9rem;display:block;word-break:keep-all}
+.rwd .rinfo span{font-size:.74rem;color:var(--gold);font-weight:800}
+.rwd .racts{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.rwd .rbuy{border:none;border-radius:10px;font-family:inherit;font-weight:800;font-size:.76rem;padding:8px 12px;cursor:pointer;background:linear-gradient(135deg,var(--gold),var(--orange));color:#3d2b00;white-space:nowrap}
+.rwd .rbuy:disabled{opacity:.4;background:var(--card);color:var(--sub);cursor:not-allowed}
+.rwd .redit{display:flex;gap:5px}
+.rwd .redit button{border:none;background:#12162e;width:28px;height:26px;border-radius:8px;font-size:.75rem;cursor:pointer}
+.rwd .redit .rdel{background:rgba(255,123,123,.15);color:var(--red)}
+.redeemitem{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.redeemitem .rem{font-size:1.3rem}
+.redeemitem b{font-size:.82rem}
+.redeemitem span{font-size:.68rem;color:var(--sub);margin-left:auto;white-space:nowrap}
+.gcard{background:var(--card2);border-radius:14px;padding:14px;margin-bottom:10px}
+.gcard b{font-size:.88rem}
+.gcard .gg{font-size:.68rem;color:var(--accent2);font-weight:800}
+.gcard p{font-size:.78rem;color:var(--sub);margin-top:4px;line-height:1.5;word-break:keep-all}
+.quiz-q{font-size:1rem;font-weight:800;margin-bottom:14px;line-height:1.5;word-break:keep-all}
+.quiz-opt{display:block;width:100%;text-align:left;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:14px;padding:14px;margin-bottom:10px;font-size:.88rem;cursor:pointer;font-family:inherit;word-break:keep-all}
+.quiz-opt:active{background:var(--accent);border-color:var(--accent)}
+.result-combo{background:linear-gradient(135deg,rgba(124,108,255,.15),rgba(78,205,196,.1));border:1px solid rgba(124,108,255,.4);border-radius:14px;padding:14px;margin-bottom:10px}
+.result-combo b{font-size:.9rem}
+.result-combo p{font-size:.78rem;color:var(--sub);margin-top:6px;line-height:1.55;word-break:keep-all}
+.notice{background:rgba(255,209,102,.1);border:1px solid rgba(255,209,102,.3);border-radius:14px;padding:12px;font-size:.78rem;line-height:1.55;color:#ffe3a3;word-break:keep-all}
+.subrow{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.subrow .sn{flex:1;min-width:0;font-weight:700;font-size:.85rem}
+.subrow .sm{font-size:.7rem;color:var(--sub)}
+.subrow button{border:none;background:#12162e;width:30px;height:30px;border-radius:9px;font-size:.8rem;cursor:pointer}
+.subrow .sdel{background:rgba(255,123,123,.15);color:var(--red)}
+nav{position:fixed;bottom:0;left:0;right:0;background:rgba(15,18,38,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;padding:8px 6px calc(8px + env(safe-area-inset-bottom));z-index:50}
+nav button{flex:1;background:none;border:none;color:var(--sub);font-family:inherit;font-size:.56rem;font-weight:700;cursor:pointer;padding:6px 1px;border-radius:12px}
+nav button .ni{display:block;font-size:1.2rem;margin-bottom:2px}
+nav button.on{color:var(--txt);background:rgba(124,108,255,.18)}
+.view{display:none}
+.view.on{display:block;animation:fadein .3s}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-100px);background:linear-gradient(135deg,var(--gold),var(--orange));color:#3d2b00;font-weight:900;padding:12px 22px;border-radius:999px;z-index:100;transition:.4s cubic-bezier(.22,1,.36,1);font-size:.88rem;box-shadow:0 8px 24px rgba(0,0,0,.4);white-space:nowrap}
+#toast.show{transform:translateX(-50%) translateY(0)}
+.confetti{position:fixed;top:-12px;z-index:99;font-size:1.2rem;animation:fall linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+.big{font-size:1.6rem;font-weight:900}
+.center{text-align:center}
+.mt8{margin-top:8px}.mt14{margin-top:14px}
+.empty{text-align:center;color:var(--sub);font-size:.82rem;padding:18px 8px;line-height:1.6;word-break:keep-all}
+#onboard{position:fixed;inset:0;z-index:200;background:var(--bg);overflow-y:auto;display:none}
+#onboard.show{display:block}
+#onboard .ob{max-width:560px;margin:0 auto;padding:28px 20px calc(28px + env(safe-area-inset-bottom))}
+#onboard h1{font-size:1.5rem;margin-bottom:6px}
+#onboard .lead{color:var(--sub);font-size:.9rem;margin-bottom:22px;line-height:1.5;word-break:keep-all}
+#onboard h2{font-size:.95rem;margin:20px 0 10px}
+.presetgrid{display:flex;flex-wrap:wrap;gap:8px}
+.scorerow{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:12px;padding:8px 12px;margin-bottom:8px}
+.scorerow .snm{flex:1;min-width:0;font-weight:700;font-size:.85rem}
+.scorerow .sin{width:64px}
+.scorerow .sin input{width:100%;background:#12162e;border:1px solid var(--line);border-radius:10px;color:var(--txt);font-family:inherit;font-size:16px;padding:8px;text-align:center;outline:none}
+.scorerow .arr{color:var(--sub);font-size:.8rem}
+.scorerow .lbl{font-size:.6rem;color:var(--sub);text-align:center;display:block;margin-bottom:2px}
+</style>
+</head>
+<body>
+
+<div id="onboard"><div class="ob">
+  <h1>🏆 방학 퀘스트 플래너</h1>
+  <p class="lead">이번 방학을 게임처럼 즐기며 목표에 다가가 보자! 먼저 나에 대해 알려줘.</p>
+  <div class="field"><label>이름 / 별명</label><input type="text" id="ob_name" placeholder="예: 민준, 콩이"></div>
+  <h2>학교급</h2>
+  <div class="chiprow" id="ob_level">
+    <button class="chip on" data-l="중">중학생</button>
+    <button class="chip" data-l="고">고등학생</button>
+  </div>
+  <div class="field" style="margin-top:12px"><label>학년</label>
+    <select id="ob_grade"><option value="1">1학년</option><option value="2">2학년</option><option value="3">3학년</option></select></div>
+  <h2>방학 기간</h2>
+  <div class="numrow">
+    <div class="field"><label>시작일</label><input type="date" id="ob_start"></div>
+    <div class="field"><label>종료일</label><input type="date" id="ob_end"></div>
+  </div>
+  <h2>공부할 과목 <span style="font-size:.72rem;color:var(--sub);font-weight:500">(눌러서 선택 · 나중에 수정 가능)</span></h2>
+  <div class="presetgrid" id="ob_subjects"></div>
+  <div class="field" style="margin-top:12px;display:flex;gap:8px">
+    <input type="text" id="ob_custom" placeholder="직접 과목 추가 (예: 제2외국어)" style="flex:1">
+    <button class="btn mini" id="ob_addSubj" style="flex-shrink:0">추가</button>
+  </div>
+  <div id="ob_scoreWrap" style="display:none">
+    <h2>과목별 점수 <span style="font-size:.72rem;color:var(--sub);font-weight:500">(직전 시험 점수 → 이번 방학 목표 · 나중에 수정 가능)</span></h2>
+    <div id="ob_scores"></div>
+  </div>
+  <div class="notice" style="margin:16px 0"><label style="display:flex;align-items:center;gap:10px;cursor:pointer;color:inherit;font-weight:700"><input type="checkbox" id="ob_seed" checked style="width:20px;height:20px"> 추천 학습 계획 자동으로 만들기 (선택 과목마다 개념→문제→주간테스트)</label></div>
+  <button class="btn" id="ob_go">🚀 방학 퀘스트 시작하기!</button>
+  <p class="center" style="font-size:.7rem;color:var(--sub);margin-top:12px">입력한 정보는 이 기기의 브라우저에만 저장돼요.</p>
+</div></div>
+
+<div class="wrap" id="app" style="display:none">
+  <div class="topbar">
+    <div class="hello" id="helloBox">안녕! 👋<small id="todayLabel"></small></div>
+    <div class="topright"><button class="gear" id="gearBtn" title="설정">⚙️</button><div class="dday" id="dday"></div></div>
+  </div>
+
+  <div class="view on" id="view-home">
+    <div class="card quote"><p id="quoteTxt"></p><span id="quoteWho"></span></div>
+    <div class="card">
+      <div class="lvlrow">
+        <div class="lvlbadge"><small>LV</small><b id="lvlNum">1</b></div>
+        <div class="lvlinfo">
+          <div class="title" id="lvlTitle"></div>
+          <div class="xp" id="xpLabel"></div>
+          <div class="bar"><i id="xpBar" style="width:0%"></i></div>
+        </div>
+      </div>
+      <div class="coinbar" id="coinBar" onclick="gotoShop()">
+        <span class="ci">🪙</span><b id="coinBal">0</b><span class="cl">코인 · 상점에서 보상 교환</span><span class="cgo">🎁 상점 ›</span>
+      </div>
+      <div class="streakrow">
+        <div class="pill"><b id="stStreak">🔥 0</b><span>연속 달성</span></div>
+        <div class="pill"><b id="stDone">✅ 0</b><span>완료 계획</span></div>
+        <div class="pill"><b id="stMins">⏱ 0분</b><span>총 공부시간</span></div>
+        <div class="pill"><b id="stPerfect">🌟 0</b><span>완벽한 하루</span></div>
+      </div>
+      <div id="shieldRow"></div>
+    </div>
+    <div class="card" id="weeklyCard">
+      <h3>📆 이번 주 목표 <span class="tag" id="weeklyRange"></span></h3>
+      <div class="qprog"><b id="weeklyCount"></b><div class="bar"><i id="weeklyBar" style="width:0%"></i></div></div>
+      <div id="weeklyMsg"></div>
+    </div>
+    <div class="card">
+      <h3>🎯 목표까지 얼마나 왔을까? <span class="tag">현재 점수 → 목표 점수</span></h3>
+      <div id="homeSubjects"></div>
+    </div>
+    <div class="card">
+      <h3>🗓️ 방학 진행 상황</h3>
+      <div class="cal" id="calGrid"></div>
+      <div class="callegend">
+        <span><i style="background:rgba(74,222,128,.6)"></i>올클리어</span>
+        <span><i style="background:rgba(255,209,102,.6)"></i>일부 완료</span>
+        <span><i style="background:#3a3f6b"></i>예정</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="view" id="view-plan">
+    <div class="card">
+      <h3>📝 나의 방학 계획 <span class="tag">과목을 골라 세부 계획 입력</span></h3>
+      <div class="subtabs" id="planTabs"></div>
+      <div id="planSummary"></div>
+      <div id="planList"></div>
+      <button class="btn" id="addPlanBtn">＋ 계획 추가하기</button>
+      <button class="btn ghost" id="seedBtn">💡 이 과목 추천 계획 불러오기</button>
+    </div>
+    <div class="card">
+      <h3>💡 계획 잘 세우는 법</h3>
+      <div class="notice">①개념 정리 → ②문제 풀이 → ③주말 셀프 테스트 순서로 짜면 효과적이에요. 하루에 2~4개 정도가 적당해요. 막막하면 "추천 계획 불러오기"로 시작한 뒤 나에게 맞게 고쳐보자 ✏️</div>
+    </div>
+  </div>
+
+  <div class="view" id="view-quest">
+    <div class="card">
+      <h3>⚔️ 오늘의 퀘스트 <span class="tag" id="questDateTag"></span></h3>
+      <div class="qprog"><b id="questCount"></b><div class="bar"><i id="questBar" style="width:0%"></i></div></div>
+      <div id="questList"></div>
+      <div class="perfect" id="perfectMsg" style="display:none">🌟 오늘 계획 올클리어! 보너스 +30 XP! 🌟</div>
+      <button class="btn ghost" id="addQuestBtn" style="margin-top:12px">＋ 오늘 퀘스트 추가</button>
+      <div style="font-size:.7rem;color:var(--sub);margin-top:8px;text-align:center">항목을 누르면 결과 입력 · ✏️ 수정 · ✕ 삭제</div>
+    </div>
+    <div class="card">
+      <h3>🎁 오늘의 보너스 습관 <span class="tag">매일 반복하는 좋은 습관</span></h3>
+      <div id="bonusList"></div>
+      <button class="btn ghost" id="addHabitBtn" style="margin-top:10px">＋ 습관 추가 / 편집</button>
+    </div>
+  </div>
+
+  <div class="view" id="view-shop">
+    <div class="card" style="text-align:center">
+      <div style="font-size:.8rem;color:var(--sub)">지금 가진 코인</div>
+      <div class="bigcoin">🪙 <span id="shopBal">0</span></div>
+      <div id="nextReward" style="font-size:.78rem;color:var(--sub)"></div>
+      <div class="bar" style="margin-top:8px"><i id="nextRewardBar" style="width:0%;background:linear-gradient(90deg,var(--gold),var(--orange))"></i></div>
+    </div>
+    <div class="card">
+      <h3>🎁 보상 상점 <span class="tag">부모님과 함께 정해요</span></h3>
+      <div class="notice" style="margin-bottom:12px">공부로 모은 코인을 <b>미리 약속한 보상</b>과 바꿀 수 있어요! 부모님과 상의해 보상과 코인 값을 ✏️로 수정하거나 ＋로 추가하세요.</div>
+      <div id="rewardList"></div>
+      <button class="btn ghost" id="addRewardBtn">＋ 보상 추가하기</button>
+    </div>
+    <div class="card"><h3>🧾 교환 기록</h3><div id="redeemList"></div></div>
+    <div class="card">
+      <h3>👨‍👩‍👧 부모님께 <span class="tag">동기부여 설계</span></h3>
+      <div class="notice">이 앱은 <b>자기결정이론</b>(자율성·유능감·관계성)과 <b>토큰 경제</b> 기법에 기반해요. 팁: ① 보상은 <b>아이와 함께</b> 정하기 ② 작은 보상은 자주, 큰 보상은 가끔 ③ 결과보다 <b>노력·꾸준함</b>을 칭찬 ④ 준 코인을 벌로 뺏지 않기.</div>
+    </div>
+  </div>
+
+  <div class="view" id="view-growth">
+    <div class="card">
+      <h3>🚀 전체 진도</h3>
+      <div class="qprog"><b id="allProg"></b><div class="bar"><i id="allProgBar" style="width:0%"></i></div></div>
+      <div class="statrow">
+        <div class="stat"><b id="gMins">0분</b><span>총 공부시간</span></div>
+        <div class="stat"><b id="gAcc">-</b><span>평균 정답률</span></div>
+        <div class="stat"><b id="gStar">-</b><span>평균 이해도</span></div>
+        <div class="stat"><b id="gTest">-</b><span>테스트 평균</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📈 과목별 성장 곡선 <span class="tag">입력한 결과로 그려져요</span></h3>
+      <div id="growthCharts"></div>
+    </div>
+    <div class="card"><h3>⏱ 최근 2주 공부시간</h3><div class="chartwrap" id="timeChart"></div></div>
+    <div class="card"><h3>🏅 배지 컬렉션</h3><div class="badges" id="badgeGrid"></div></div>
+    <div class="card"><h3>📔 학습 일지 <span class="tag">퀘스트 완료 때 남긴 메모</span></h3><div id="memoList"></div></div>
+    <div class="card">
+      <h3>🔗 데이터 백업</h3>
+      <button class="btn ghost" id="copyTodayBtn">📋 오늘 기록 복사</button>
+      <button class="btn ghost" id="expBtn">💾 백업 파일 저장 (JSON)</button>
+      <button class="btn ghost" id="impBtn">📂 백업 불러오기</button>
+      <input type="file" id="impFile" accept="application/json,.json" style="display:none">
+      <div class="notice mt8">💾 백업으로 기기를 옮기거나 기록을 안전하게 보관하세요. 기록은 이 브라우저에만 저장됩니다.</div>
+    </div>
+  </div>
+
+  <div class="view" id="view-career">
+    <div class="card">
+      <h3>🧭 나의 진로·계열 찾기 <span class="tag" id="careerTag"></span></h3>
+      <div class="notice" style="margin-bottom:12px" id="careerIntro"></div>
+      <div id="quizArea"></div>
+    </div>
+    <div class="card">
+      <h3>📚 계열 한눈에 보기 <span class="tag">읽으면 +10 XP</span></h3>
+      <div id="trackList"></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+<div id="overlay"></div>
+<div id="sheet"><div class="grip"></div><div id="sheetBody"></div></div>
+
+<nav id="nav" style="display:none">
+  <button class="on" data-v="home"><span class="ni">🏠</span>홈</button>
+  <button data-v="plan"><span class="ni">📝</span>계획</button>
+  <button data-v="quest"><span class="ni">⚔️</span>퀘스트</button>
+  <button data-v="shop"><span class="ni">🎁</span>상점</button>
+  <button data-v="growth"><span class="ni">📈</span>성장</button>
+  <button data-v="career"><span class="ni">🧭</span>진로</button>
+</nav>
+
+<script>
+"use strict";
+const DAY_MS=86400000;
+const KEY="vacPlannerV1";
+const PALETTE=["#7c6cff","#4ecdc4","#ffa94d","#ff6b9d","#4ade80","#ffd166","#6fb1ff","#ff7b7b","#b18cff","#42d6b4","#ffb86c","#8be9fd"];
+const PRESETS={
+ "중":[["국어","📖"],["영어","🔤"],["수학","➗"],["과학","🧪"],["사회","🌏"],["역사","🏯"],["도덕","⚖️"],["정보","💻"],["기술·가정","🔧"]],
+ "고":[["국어","📖"],["영어","🔤"],["수학","➗"],["과학","🧪"],["사회","🌏"],["한국사","🏯"],["정보","💻"],["제2외국어","🗣️"]]
+};
+const TYPES={p:{name:"문제풀이",cls:"t-p",xp:20,coin:10},c:{name:"개념정리",cls:"t-c",xp:20,coin:10},t:{name:"셀프테스트",cls:"t-t",xp:30,coin:20}};
+const DEFAULT_HABITS=[
+ {id:"h1",text:"운동 30분 하기 🏃"},{id:"h2",text:"책 30분 읽기 📚"},
+ {id:"h3",text:"방·책상 정리하기 ✨"},{id:"h4",text:"오늘 배운 것 한 줄 정리 🗣️"},
+ {id:"h5",text:"물 충분히 마시고 스트레칭 💧"},
+];
+const DEFAULT_REWARDS=[
+ {id:"r1",emoji:"🍦",name:"좋아하는 간식/디저트",cost:40},
+ {id:"r2",emoji:"🎮",name:"게임·유튜브 30분 추가",cost:60},
+ {id:"r3",emoji:"🎬",name:"영화·OTT 한 편",cost:120},
+ {id:"r4",emoji:"🛌",name:"주말 늦잠 자기 쿠폰",cost:100},
+ {id:"r5",emoji:"🍕",name:"먹고 싶은 메뉴 외식",cost:200},
+ {id:"r6",emoji:"🎁",name:"용돈 5,000원",cost:250},
+ {id:"r7",emoji:"🏖️",name:"방학 특별 나들이 (대형 보상)",cost:500},
+];
+const QUOTES=[
+ ["작은 성취가 모여 위대한 결과를 만든다.","로버트 콜리어"],["천 리 길도 한 걸음부터.","한국 속담"],
+ ["오늘 걷지 않으면 내일은 뛰어야 한다.","도스토옙스키"],["성공은 매일 반복한 작은 노력들의 합이다.","로버트 콜리어"],
+ ["할 수 있다고 믿는 사람이 결국 해낸다.","베르길리우스"],["공부는 미래의 나에게 보내는 선물이다.","작자 미상"],
+ ["넘어지는 것은 실패가 아니다. 일어나지 않는 것이 실패다.","공자"],["시작이 반이다.","아리스토텔레스"],
+ ["어제보다 나은 오늘이면 충분하다.","작자 미상"],["재능은 꾸준함을 이기지 못한다.","작자 미상"],
+ ["꿈을 이루는 가장 확실한 방법은 지금 깨어 움직이는 것.","파울로 코엘료"],["느려도 괜찮아. 멈추지만 않으면 돼.","공자"],
+ ["노력은 배신하지 않는다.","일본 격언"],["미래는 지금 준비하는 사람의 것이다.","말콤 X"],
+ ["실패는 성공으로 가는 계단이다.","토머스 에디슨"],["오늘의 1시간이 내일의 자신감이 된다.","작자 미상"],
+ ["위대한 일은 작은 일들이 모여 이루어진다.","빈센트 반 고흐"],["배움에는 끝이 없다. 그래서 매일이 새롭다.","작자 미상"],
+ ["가장 어두운 밤도 끝나고 해는 뜬다.","빅토르 위고"],["습관이 바뀌면 인생이 바뀐다.","윌리엄 제임스"],
+ ["지금 흘린 땀은 결코 거짓말하지 않는다.","작자 미상"],["목표가 있는 사람은 방황하지 않는다.","작자 미상"],
+ ["기회는 준비된 사람에게 찾아온다.","루이 파스퇴르"],["매일 조금씩, 그것이 비결의 전부다.","작자 미상"],
+ ["포기하고 싶을 때가 가장 성장하는 순간이다.","작자 미상"],["최고의 투자는 자신에게 하는 투자다.","벤저민 프랭클린"],
+ ["끝날 때까지 끝난 게 아니다.","요기 베라"],["방학은 쉬는 시간이 아니라 역전의 시간이다.","작자 미상"],
+ ["남과 비교하지 말고 어제의 나와 비교하라.","작자 미상"],["행동 없는 행복은 없다.","벤저민 디즈레일리"],
+];
+const BADGES=[
+ {id:"plan5",ic:"📝",name:"설계자",desc:"계획 5개 세우기"},{id:"first",ic:"🐣",name:"첫 걸음",desc:"첫 계획 완료"},
+ {id:"streak3",ic:"🔥",name:"3일 연속",desc:"3일 연속 달성"},{id:"streak7",ic:"⚡",name:"일주일 불꽃",desc:"7일 연속 달성"},
+ {id:"streak14",ic:"🌋",name:"2주 연속",desc:"14일 연속 달성"},{id:"perfect1",ic:"🌟",name:"완벽한 하루",desc:"하루 계획 올클리어"},
+ {id:"perfect5",ic:"👑",name:"올클 5회",desc:"완벽한 하루 5번"},{id:"test80",ic:"🎯",name:"명중",desc:"셀프테스트 80점↑"},
+ {id:"half",ic:"🌗",name:"절반 돌파",desc:"전체 계획 50% 완료"},{id:"career",ic:"🧭",name:"진로 탐색가",desc:"진로 퀴즈 완료"},
+ {id:"master",ic:"🏆",name:"방학 마스터",desc:"전체 계획 90% 완료"},
+];
+const TRACKS={
+ hum:{name:"인문·어문",icon:"📚",focus:"국어·영어·역사",tip:"글을 많이 읽고 쓰는 습관이 큰 힘이 돼요. 독서록·에세이를 꾸준히!"},
+ soc:{name:"사회·법·정치",icon:"⚖️",focus:"사회·국어·영어",tip:"시사 뉴스를 읽고 내 생각을 정리하는 연습이 좋아요."},
+ econ:{name:"상경(경영·경제)",icon:"📊",focus:"수학·사회·영어",tip:"수학(특히 확률·통계)과 데이터 해석에 강해지면 유리해요."},
+ sci:{name:"자연과학",icon:"🔬",focus:"수학·과학",tip:"원리를 '왜?'까지 파고드는 탐구 습관을 길러보세요."},
+ eng:{name:"공학·기술",icon:"⚙️",focus:"수학·과학·정보",tip:"수학·물리 기초를 탄탄히 하고 만들기·코딩을 즐겨보세요."},
+ med:{name:"의약·생명",icon:"🧬",focus:"과학(생명·화학)·수학·영어",tip:"생명·화학 개념과 영어 지문 독해력을 함께 키우면 좋아요."},
+ it:{name:"IT·컴퓨터",icon:"💻",focus:"수학·정보·영어",tip:"코딩을 직접 해보는 게 최고의 공부! 작은 프로그램부터 만들어보세요."},
+ art:{name:"예체능",icon:"🎨",focus:"실기 + 관련 이론",tip:"매일 조금씩 실기 연습을 기록하고 포트폴리오를 쌓아보세요."},
+ edu:{name:"교육",icon:"🎓",focus:"관심 교과·국어·영어",tip:"내가 잘 아는 걸 남에게 설명해보면 이해도 깊어지고 적성도 확인돼요."},
+};
+const QUIZ=[
+ {q:"자유시간이 생기면 가장 하고 싶은 것은?",opts:[["게임하거나 컴퓨터로 뭔가 만들기","it"],["책 읽거나 글쓰기","hum"],["과학 실험·다큐 보기","sci"],["그림·음악·영상 만들기","art"]]},
+ {q:"학교에서 가장 재미있는 순간은?",opts:[["수학 문제가 딱 풀렸을 때","sci"],["토론하고 발표할 때","soc"],["실험하고 결과 분석할 때","sci"],["뭔가 만들어 보여줄 때","art"]]},
+ {q:"뉴스를 본다면 어떤 소식이 궁금해?",opts:[["신기한 기술·AI·게임","it"],["세계·사회 이야기","soc"],["돈·경제·기업","econ"],["우주·환경·과학 발견","sci"]]},
+ {q:"모둠 과제에서 나의 역할은?",opts:[["자료 조사·정리","hum"],["아이디어 내기","art"],["계획 세우고 이끌기","econ"],["제작·발표 자료 만들기","it"]]},
+ {q:"어른이 되면 어떤 모습이면 좋겠어?",opts:[["새로운 것을 발명·개발","eng"],["사람을 돕고 치료하는 사람","med"],["지식을 가르치고 전하는 사람","edu"],["회사를 만들거나 이끄는 사람","econ"]]},
+ {q:"어려운 문제를 만나면 나는?",opts:[["이것저것 시도해본다","it"],["원리부터 차근차근 이해","sci"],["사람들과 이야기하며 푼다","soc"],["나만의 방식을 찾는다","art"]]},
+ {q:"가장 좋아하거나 자신 있는 과목은?",opts:[["국어·영어","hum"],["수학·과학","sci"],["사회·역사","soc"],["예술·체육","art"]]},
+ {q:"누군가를 돕는다면 어떤 방식이 좋아?",opts:[["아플 때 치료해주기","med"],["모르는 걸 가르쳐주기","edu"],["문제를 기술로 해결","eng"],["마음을 이해하고 들어주기","hum"]]},
+];
+
+let S=load();
+let VS,VE,TOTAL;
+function load(){
+  let s=null;
+  try{ s=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+  if(!s||!s.profile){
+    s={profile:{name:"",level:"중",grade:1,vacStart:"",vacEnd:"",setup:false},
+       subjects:[], plans:[], recs:{}, bonus:{}, badges:[], quizResult:null, readTracks:[],
+       habits:JSON.parse(JSON.stringify(DEFAULT_HABITS)), rewards:JSON.parse(JSON.stringify(DEFAULT_REWARDS)),
+       redemptions:[], weeklyClaimed:{}, bonusXp:0, bonusCoins:0, shields:0, frozen:{}};
+  }
+  return fillDefaults(s);
+}
+function fillDefaults(s){
+  if(!s.habits) s.habits=JSON.parse(JSON.stringify(DEFAULT_HABITS));
+  if(!s.rewards) s.rewards=JSON.parse(JSON.stringify(DEFAULT_REWARDS));
+  if(!s.redemptions) s.redemptions=[];
+  if(!s.weeklyClaimed) s.weeklyClaimed={};
+  if(!s.readTracks) s.readTracks=[];
+  if(!s.subjects) s.subjects=[];
+  if(!s.plans) s.plans=[];
+  if(!s.recs) s.recs={};
+  if(!s.bonus) s.bonus={};
+  if(!s.badges) s.badges=[];
+  if(s.bonusXp==null) s.bonusXp=0;
+  if(s.bonusCoins==null) s.bonusCoins=0;
+  if(s.shields==null) s.shields=0;
+  if(!s.frozen) s.frozen={};
+  return s;
+}
+function save(){ localStorage.setItem(KEY, JSON.stringify(S)); }
+function uid(){ return "p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+function fmt(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parse(s){ const [y,m,dd]=s.split("-").map(Number); return new Date(y,m-1,dd); }
+function today(){ const n=new Date(); return new Date(n.getFullYear(),n.getMonth(),n.getDate()); }
+function recalcDates(){
+  VS=S.profile.vacStart?parse(S.profile.vacStart):today();
+  VE=S.profile.vacEnd?parse(S.profile.vacEnd):new Date(today().getTime()+30*DAY_MS);
+  if(VE<VS) VE=new Date(VS.getTime()+30*DAY_MS);
+  TOTAL=Math.round((VE-VS)/DAY_MS)+1;
+}
+function dayIndex(d){ return Math.round((d-VS)/DAY_MS); }
+const WD=["일","월","화","수","목","금","토"];
+function prettyDate(s){ const d=parse(s); return (d.getMonth()+1)+"/"+d.getDate()+"("+WD[d.getDay()]+")"; }
+
+function SB(id){ return S.subjects.find(s=>s.id===id) || {id,name:"기타",icon:"📌",color:"#8a91c0",cur:70,goal:90}; }
+function newSubject(name,icon){ const color=PALETTE[S.subjects.length%PALETTE.length]; return {id:uid(),name,icon:icon||"📘",color,cur:70,goal:90}; }
+function buildSeedPlans(sub, fromDate){
+  const out=[]; const days=[];
+  for(let i=0;i<TOTAL;i++){ const d=new Date(VS.getTime()+i*DAY_MS); if(d<fromDate) continue; if(d.getDay()===0) continue; days.push({dk:fmt(d),dow:d.getDay()}); }
+  if(!days.length) return out;
+  const N=sub.name;
+  const items=[
+   ["c",N+" 1단원 개념 정리","교과서·인강으로 핵심 개념 노트 정리"],
+   ["p",N+" 기본 문제 15문항","문제집 풀고 오답 정리"],
+   ["c",N+" 2단원 개념 정리","핵심 개념·용어 카드 만들기"],
+   ["p",N+" 유형별 문제 15문항","틀린 유형 다시 풀기"],
+   ["c",N+" 취약 단원 집중 정리","가장 약한 단원 다시 정리"],
+   ["p",N+" 심화·응용 문제 10문항","어려운 문제 도전"],
+   ["c",N+" 전체 개념 마인드맵","한 장으로 정리하기"],
+   ["p",N+" 실전 모의 문제","시험처럼 시간 재고 풀기"],
+   ["c",N+" 다음 학기 예습","다음 단원 미리 훑어보기"],
+  ];
+  const step=Math.max(1,Math.floor(days.length/items.length));
+  items.forEach((it,k)=>{ const idx=Math.min(days.length-1, k*step); out.push({id:uid()+k.toString(36),sid:sub.id,date:days[idx].dk,type:it[0],title:it[1],how:it[2],seed:true}); });
+  days.filter(x=>x.dow===6).forEach(x=>{ out.push({id:uid()+"t"+x.dk.slice(8),sid:sub.id,date:x.dk,type:"t",title:N+" 주간 셀프 테스트",how:"이번 주 공부한 범위에서 문제를 골라 시험처럼 풀고 점수 입력",seed:true}); });
+  return out;
+}
+
+function plansOn(dateStr){ return S.plans.filter(p=>p.date===dateStr); }
+function recOf(p){ return S.recs[p.id]; }
+function qualityOf(rec,type){
+  if(!rec) return null;
+  if(type==="t" && rec.score!=null) return rec.score/100;
+  if(type==="p" && rec.solved>0 && rec.correct!=null) return Math.min(1,rec.correct/rec.solved);
+  if(rec.stars) return rec.stars/5;
+  return null;
+}
+function allStats(){
+  let xp=0,coins=0,done=0,mins=0,accs=[],stars=[],tests=[],perSubjDone={};
+  S.plans.forEach(p=>{
+    const r=recOf(p); if(!r) return;
+    done++; perSubjDone[p.sid]=(perSubjDone[p.sid]||0)+1;
+    xp+=TYPES[p.type].xp; coins+=TYPES[p.type].coin;
+    const q=qualityOf(r,p.type);
+    if(q!=null&&q>=0.8){ xp+=5; coins+=5; }
+    if(r.mins) mins+=r.mins;
+    if(p.type==="p"&&r.solved>0&&r.correct!=null) accs.push(r.correct/r.solved*100);
+    if(p.type==="c"&&r.stars) stars.push(r.stars);
+    if(p.type==="t"&&r.score!=null) tests.push(r.score);
+  });
+  let bonusDone=0; for(const k in S.bonus){ bonusDone+=(S.bonus[k]||[]).length; }
+  xp+=bonusDone*10+(S.bonusXp||0); coins+=bonusDone*5+(S.bonusCoins||0);
+  let perfect=0; const daysWithAct={}; const byDate={};
+  S.plans.forEach(p=>{ (byDate[p.date]=byDate[p.date]||[]).push(p); });
+  for(const dk in byDate){ const ps=byDate[dk]; const dn=ps.filter(p=>recOf(p)).length; if(dn>0) daysWithAct[dk]=1; if(dn===ps.length&&ps.length>0){ perfect++; xp+=30; coins+=20; } }
+  for(const k in S.bonus){ if((S.bonus[k]||[]).length) daysWithAct[k]=1; }
+  let streak=0; let d=today();
+  if(!daysWithAct[fmt(d)]) d=new Date(d-DAY_MS);
+  while(true){ const k=fmt(d); if(daysWithAct[k]){ streak++; d=new Date(d-DAY_MS); } else if(S.frozen&&S.frozen[k]){ d=new Date(d-DAY_MS); } else break; }
+  const spent=(S.redemptions||[]).reduce((a,r)=>a+(r.cost||0),0);
+  const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+  return {xp,coins,spent,balance:coins-spent,done,mins,perfect,streak,perSubjDone,avgAcc:avg(accs),avgStar:avg(stars),avgTest:avg(tests),total:S.plans.length,byDate};
+}
+function weekInfo(){
+  const ti=Math.max(0,Math.min(TOTAL-1,dayIndex(today())));
+  const wk=Math.floor(ti/7), start=wk*7, end=Math.min(TOTAL-1,start+6);
+  let planned=0,doneN=0;
+  for(let i=start;i<=end;i++){ const dk=fmt(new Date(VS.getTime()+i*DAY_MS)); const ps=plansOn(dk); planned+=ps.length; doneN+=ps.filter(p=>recOf(p)).length; }
+  const sd=new Date(VS.getTime()+start*DAY_MS), ed=new Date(VS.getTime()+end*DAY_MS);
+  return {wk,planned,doneN,claimed:!!S.weeklyClaimed[wk],label:(sd.getMonth()+1)+"/"+sd.getDate()+"~"+(ed.getMonth()+1)+"/"+ed.getDate()};
+}
+function levelOf(xp){
+  const lv=Math.min(20,Math.floor(xp/150)+1);
+  const titles=["방학 새내기","퀘스트 견습생","성장하는 모험가","꾸준함의 달인","목표 사냥꾼","방학의 지배자","전설의 학습러"];
+  return {lv,title:titles[Math.min(titles.length-1,Math.floor((lv-1)/2))],into:xp%150,need:150};
+}
+function estScore(sid,upto){
+  const s=SB(sid);
+  const plans=S.plans.filter(p=>p.sid===sid&&p.type!=="t");
+  if(!plans.length) return s.cur;
+  const dr=plans.filter(p=>recOf(p)&&p.date<=upto);
+  const progress=dr.length/plans.length;
+  const qs=dr.map(p=>qualityOf(recOf(p),p.type)).filter(q=>q!=null);
+  const quality=qs.length?qs.reduce((a,b)=>a+b,0)/qs.length:0.75;
+  return Math.round((s.cur+(s.goal-s.cur)*progress*(0.4+0.8*quality))*10)/10;
+}
+
+const $=q=>document.querySelector(q);
+let ST=null, curSubj=null;
+function render(){
+  recalcDates(); ST=allStats();
+  const t=today();
+  $("#helloBox").innerHTML=`안녕, ${S.profile.name||"친구"}! 👋<small id="todayLabel"></small>`;
+  $("#todayLabel").textContent=t.toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"long"});
+  let dd; const ti=dayIndex(t);
+  if(t<VS) dd="방학 시작 D-"+Math.round((VS-t)/DAY_MS);
+  else if(t>VE) dd="방학 끝! 수고했어 🎉";
+  else dd="D-"+Math.round((VE-t)/DAY_MS+1)+" · "+(ti+1)+"일차";
+  $("#dday").textContent=dd;
+  const qi=Math.floor(t/DAY_MS)%QUOTES.length;
+  $("#quoteTxt").textContent=QUOTES[qi][0]; $("#quoteWho").textContent="— "+QUOTES[qi][1]+" · 오늘의 한마디";
+  const lv=levelOf(ST.xp);
+  $("#lvlNum").textContent=lv.lv; $("#lvlTitle").textContent=lv.title;
+  $("#xpLabel").textContent=ST.xp+" XP · 다음 레벨까지 "+(lv.need-lv.into)+" XP";
+  $("#xpBar").style.width=(lv.into/lv.need*100)+"%";
+  $("#stStreak").textContent="🔥 "+ST.streak;
+  $("#stDone").textContent="✅ "+ST.done;
+  $("#stMins").textContent="⏱ "+(ST.mins>=60?Math.floor(ST.mins/60)+"시간"+(ST.mins%60?ST.mins%60+"분":""):ST.mins+"분");
+  $("#stPerfect").textContent="🌟 "+ST.perfect;
+  $("#coinBal").textContent=ST.balance;
+  if(!curSubj&&S.subjects.length) curSubj=S.subjects[0].id;
+  renderShield(); renderWeekly(); renderHomeSubjects(); renderCal();
+  renderPlan(); renderQuests(); renderShop(); renderGrowth(); renderCareer(); checkBadges();
+}
+function renderShield(){
+  const t=today(); const y=new Date(t-DAY_MS); const yk=fmt(y); const el=$("#shieldRow");
+  const yInVac=y>=VS&&y<=VE;
+  const yActive=(ST.byDate[yk]&&ST.byDate[yk].some(p=>recOf(p)))||((S.bonus[yk]||[]).length>0);
+  if((S.shields||0)>0&&yInVac&&!yActive&&!S.frozen[yk]){ el.innerHTML=`<div class="shieldrow">🛡 <span>어제(${prettyDate(yk)}) 놓쳤어요. 방어권 <b>${S.shields}</b>개</span><button class="btn mini" onclick="useShield('${yk}')">방어권 쓰기</button></div>`; }
+  else if((S.shields||0)>0){ el.innerHTML=`<div class="shieldrow">🛡 <span>연속 방어권 <b>${S.shields}</b>개 — 하루 놓쳐도 연속이 안 끊겨요!</span></div>`; }
+  else{ el.innerHTML=`<div class="shieldrow">🛡 <span>연속 방어권 0개 — 주간 목표를 완주하면 받아요</span></div>`; }
+}
+window.useShield=function(dk){ if((S.shields||0)<=0)return; S.shields--; S.frozen[dk]=1; save(); render(); toast("🛡 연속을 지켰어요!"); confetti(16); };
+function renderWeekly(){
+  const w=weekInfo(); $("#weeklyRange").textContent=w.label;
+  const pct=w.planned?Math.round(w.doneN/w.planned*100):0;
+  $("#weeklyCount").textContent=w.doneN+" / "+w.planned+" ("+pct+"%)"; $("#weeklyBar").style.width=pct+"%";
+  const m=$("#weeklyMsg");
+  if(!w.planned){ m.innerHTML=`<div style="font-size:.74rem;color:var(--sub);margin-top:8px">이번 주 계획을 세워보자!</div>`; }
+  else if(w.doneN>=w.planned&&!w.claimed){ m.innerHTML=`<button class="btn" onclick="claimWeekly(${w.wk})" style="margin-top:10px">🎉 이번 주 완주 보상! (+40코인·+50XP·방어권 1)</button>`; }
+  else if(w.claimed){ m.innerHTML=`<div class="perfect" style="margin-top:10px">✅ 이번 주 목표 달성! 🎉</div>`; }
+  else{ m.innerHTML=`<div style="font-size:.74rem;color:var(--sub);margin-top:8px">이번 주 계획을 모두 끝내면 보너스 보상! 🎁</div>`; }
+}
+window.claimWeekly=function(wk){ const w=weekInfo(); if(w.wk!==wk||w.claimed||w.doneN<w.planned||!w.planned)return; S.weeklyClaimed[wk]=1; S.bonusCoins+=40; S.bonusXp+=50; S.shields++; save(); render(); toast("🎉 주간 완주! +40코인 +50XP +방어권!"); confetti(50); };
+window.gotoShop=function(){ switchView("shop"); };
+function renderHomeSubjects(){
+  const tk=fmt(today());
+  if(!S.subjects.length){ $("#homeSubjects").innerHTML=`<div class="empty">과목이 없어요. ⚙️ 설정에서 과목을 추가해보자!</div>`; return; }
+  $("#homeSubjects").innerHTML=S.subjects.map(s=>{
+    const est=estScore(s.id,tk); const pct=Math.min(100,est/s.goal*100);
+    const n=S.plans.filter(p=>p.sid===s.id).length; const dn=ST.perSubjDone[s.id]||0;
+    return `<div class="subj" data-sid="${s.id}" style="cursor:pointer"><div class="row1"><span style="font-size:1.05rem">${s.icon}</span><span class="name">${s.name}</span>
+        <span class="nums">${s.cur} → <b>${est}</b> / 목표 ${s.goal} ✏️</span></div>
+      <div class="sbar"><i style="width:${pct}%;background:linear-gradient(90deg,${s.color}88,${s.color})"></i></div>
+      <div class="row1" style="margin-top:4px"><span style="font-size:.68rem;color:var(--sub)">계획 ${dn}/${n} 완료 · 눌러서 점수 수정</span></div></div>`;
+  }).join("");
+  document.querySelectorAll("#homeSubjects .subj").forEach(el=>{ el.onclick=()=>openSubjectForm(el.dataset.sid); });
+}
+function renderCal(){
+  const t=today(); let html="";
+  for(let i=0;i<TOTAL;i++){
+    const d=new Date(VS.getTime()+i*DAY_MS); const key=fmt(d); const ps=plansOn(key);
+    const dn=ps.filter(p=>recOf(p)).length; let cls="";
+    if(d.getTime()===t.getTime()) cls+=" today";
+    if(d>t) cls+=" future"; else if(ps.length&&dn===ps.length) cls+=" full"; else if(dn>0) cls+=" part"; else if(d<t) cls+=" miss";
+    const mark=ps.length?(dn===ps.length&&dn>0?"✓":dn+"/"+ps.length):"";
+    html+=`<div class="d${cls}"><b>${d.getDate()}</b><span>${mark||WD[d.getDay()]}</span></div>`;
+  }
+  $("#calGrid").innerHTML=html;
+}
+function renderPlan(){
+  if(!S.subjects.length){ $("#planTabs").innerHTML=""; $("#planSummary").innerHTML=""; $("#planList").innerHTML=`<div class="empty">과목이 없어요. ⚙️ 설정에서 과목을 추가하세요.</div>`; return; }
+  if(!curSubj||!S.subjects.some(s=>s.id===curSubj)) curSubj=S.subjects[0].id;
+  $("#planTabs").innerHTML=S.subjects.map(s=>{ const n=S.plans.filter(p=>p.sid===s.id).length; return `<button class="subtab${s.id===curSubj?" on":""}" data-s="${s.id}">${s.icon} ${s.name}${n?` (${n})`:""}</button>`; }).join("");
+  document.querySelectorAll("#planTabs .subtab").forEach(b=>b.onclick=()=>{curSubj=b.dataset.s;renderPlan();});
+  const s=SB(curSubj);
+  const plans=S.plans.filter(p=>p.sid===curSubj).sort((a,b)=>a.date<b.date?-1:1);
+  const dn=plans.filter(p=>recOf(p)).length;
+  $("#planSummary").innerHTML=`<div class="notice" style="margin-bottom:10px">${s.icon} <b>${s.name}</b>: ${s.cur} → 목표 <b>${s.goal}</b> · 계획 ${plans.length}개 중 ${dn}개 완료</div>`;
+  if(!plans.length){ $("#planList").innerHTML=`<div class="empty">아직 계획이 없어요.<br>＋ 로 직접 추가하거나 💡 추천 계획을 불러와보자!</div>`; }
+  else{
+    const tk=fmt(today()); const byDate={};
+    plans.forEach(p=>{ (byDate[p.date]=byDate[p.date]||[]).push(p); });
+    $("#planList").innerHTML=Object.keys(byDate).sort().map(dk=>`<div class="plangroup"><div class="pdate${dk===tk?" istoday":""}">${prettyDate(dk)}${dk===tk?" · 오늘":""}</div>`+
+      byDate[dk].map(p=>{ const r=recOf(p); const ty=TYPES[p.type]; return `<div class="pitem${r?" pdone":""}" data-p="${p.id}"><span class="typeb ${ty.cls}">${ty.name}</span><div class="ptxt"><b>${p.title}</b>${p.how?`<span>📌 ${p.how}</span>`:""}</div><button class="del" data-del="${p.id}">✕</button></div>`; }).join("")+`</div>`).join("");
+    document.querySelectorAll("#planList .pitem").forEach(el=>{ el.onclick=e=>{ if(e.target.dataset.del)return; openQuestForm(el.dataset.p); }; });
+    document.querySelectorAll("#planList .del").forEach(el=>{ el.onclick=e=>{ e.stopPropagation(); if(confirm("이 계획을 삭제할까?")){ S.plans=S.plans.filter(p=>p.id!==el.dataset.del); delete S.recs[el.dataset.del]; save(); render(); } }; });
+  }
+  $("#addPlanBtn").onclick=()=>openQuestForm(null,curSubj);
+  $("#seedBtn").onclick=()=>{ const sub=SB(curSubj); if(S.plans.some(p=>p.sid===curSubj&&p.seed)&&!confirm(sub.name+" 추천 계획이 이미 있어요. 또 불러올까?"))return; const from=today()>VS?today():VS; const news=buildSeedPlans(sub,from); if(!news.length){ toast("방학이 끝나서 불러올 수 없어요"); return; } news.forEach(p=>S.plans.push(p)); save(); render(); toast(sub.name+" 추천 계획 불러오기 완료! ✏️"); };
+}
+function renderQuests(){
+  const t=today(); const tk=fmt(t); const inVac=t>=VS&&t<=VE; const ti=dayIndex(t);
+  $("#questDateTag").textContent=inVac?("방학 "+(ti+1)+"일차"):(t<VS?"방학 전":"방학 종료");
+  const ps=plansOn(tk).sort((a,b)=>a.sid<b.sid?-1:1);
+  if(!ps.length){ $("#questList").innerHTML=`<div class="empty">오늘 계획이 아직 없어요!<br>아래 ＋ 버튼이나 계획 탭에서 추가해보자 📝</div>`; $("#questCount").textContent="0 / 0"; $("#questBar").style.width="0%"; $("#perfectMsg").style.display="none"; }
+  else{
+    $("#questList").innerHTML=ps.map(p=>{
+      const s=SB(p.sid); const r=recOf(p); const ty=TYPES[p.type]; let recTxt="";
+      if(r){ const parts=[]; if(p.type==="p"&&r.solved>0) parts.push("정답률 "+Math.round(r.correct/r.solved*100)+"% ("+r.correct+"/"+r.solved+")"); if(p.type==="c"&&r.stars) parts.push("이해도 "+"⭐".repeat(r.stars)); if(p.type==="t"&&r.score!=null) parts.push("점수 "+r.score+"점"); if(r.mins) parts.push(r.mins+"분"); recTxt=`<span class="rec">✔ ${parts.join(" · ")}</span>`; }
+      return `<div class="qitem${r?" done":""}" data-p="${p.id}"><div class="chk">${r?"✓":""}</div>
+        <div class="qtxt"><b>${s.icon} ${p.title}</b><span>${s.name} · <span class="typeb ${ty.cls}" style="font-size:.6rem">${ty.name}</span>${p.how?" · 📌 "+p.how:""}</span>${recTxt}</div>
+        <div class="qacts"><button class="qedit" data-edit="${p.id}">✏️</button><button class="qdel" data-del="${p.id}">✕</button></div>
+        <div class="xpv">+${ty.xp}</div></div>`;
+    }).join("");
+    const dn=ps.filter(p=>recOf(p)).length; $("#questCount").textContent=dn+" / "+ps.length; $("#questBar").style.width=(dn/ps.length*100)+"%"; $("#perfectMsg").style.display=dn===ps.length?"block":"none";
+    document.querySelectorAll("#questList .qitem").forEach(el=>{ el.onclick=e=>{ const ed=e.target.dataset.edit, dl=e.target.dataset.del; if(ed){ openQuestForm(ed); return; } if(dl){ if(confirm("이 퀘스트를 삭제할까?")){ S.plans=S.plans.filter(x=>x.id!==dl); delete S.recs[dl]; save(); render(); toast("삭제했어요"); } return; } openRecord(el.dataset.p); }; });
+  }
+  $("#addQuestBtn").onclick=()=>openQuestForm(null);
+  const doneB=S.bonus[tk]||[];
+  if(!S.habits.length){ $("#bonusList").innerHTML=`<div class="empty">습관이 없어요. 아래에서 추가해보자!</div>`; }
+  else{ $("#bonusList").innerHTML=S.habits.map(h=>{ const on=doneB.includes(h.id); return `<div class="qitem${on?" done":""}" data-h="${h.id}"><div class="chk">${on?"✓":""}</div><div class="qtxt"><b>${h.text}</b><span>보너스 습관</span></div><div class="qacts"><button class="qedit" data-hedit="${h.id}">✏️</button><button class="qdel" data-hdel="${h.id}">✕</button></div><div class="xpv">+10·🪙5</div></div>`; }).join(""); }
+  document.querySelectorAll("#bonusList .qitem").forEach(el=>{ el.onclick=e=>{ const he=e.target.dataset.hedit, hd=e.target.dataset.hdel; if(he){ openHabitForm(he); return; } if(hd){ if(confirm("이 습관을 삭제할까?")){ S.habits=S.habits.filter(x=>x.id!==hd); save(); render(); } return; } const id=el.dataset.h; const arr=S.bonus[tk]||(S.bonus[tk]=[]); const k=arr.indexOf(id); if(k>=0) arr.splice(k,1); else { arr.push(id); toast("+10 XP · 🪙5! 🎉"); confetti(10); } save(); render(); }; });
+  $("#addHabitBtn").onclick=()=>openHabitForm(null);
+}
+function openHabitForm(hid){
+  const h=hid?S.habits.find(x=>x.id===hid):null;
+  sheetHTML(`<h4>${h?"✏️ 습관 수정":"＋ 새 습관"}</h4><div class="sub">매일 반복하면 좋은 습관을 적어보자!</div><div class="field"><label>습관 내용</label><input type="text" id="h_text" value="${h?esc(h.text):""}" placeholder="예: 영어 단어 10개 외우기"></div><button class="btn" id="h_save">${h?"수정 저장":"습관 추가!"}</button>`);
+  $("#h_save").onclick=()=>{ const text=$("#h_text").value.trim(); if(!text){ toast("내용을 입력해줘!"); return; } if(h){ h.text=text; } else { S.habits.push({id:uid(),text}); } save(); closeSheet(); render(); toast(h?"수정 완료!":"습관 추가! 🎁"); };
+}
+function openQuestForm(pid,forceSid){
+  const p=pid?S.plans.find(x=>x.id===pid):null;
+  if(!S.subjects.length){ toast("먼저 ⚙️ 설정에서 과목을 추가하세요"); return; }
+  const defDate=p?p.date:fmt(today()>=VS&&today()<=VE?today():VS);
+  let selSid=p?p.sid:(forceSid||curSubj||S.subjects[0].id);
+  sheetHTML(`<h4>${p?"✏️ 퀘스트 수정":"＋ 새 퀘스트"}</h4>
+    <div class="sub">${p&&recOf(p)?"완료한 퀘스트예요. 내용만 수정할 수 있어요.":"어떤 과목을, 무엇을, 어떻게 공부할지 정해보자!"}</div>
+    <div class="field"><label>과목</label><div class="chiprow" id="q_subj">${S.subjects.map(s=>`<button class="chip${s.id===selSid?" on":""}" data-s="${s.id}">${s.icon} ${s.name}</button>`).join("")}</div></div>
+    <div class="field"><label>날짜</label><input type="date" id="q_date" value="${p?p.date:defDate}" min="${fmt(VS)}" max="${fmt(VE)}"></div>
+    <div class="field"><label>유형</label><div class="chiprow" id="q_type"><button class="chip${(!p||p.type==="c")?" on":""}" data-t="c">📖 개념정리</button><button class="chip${p&&p.type==="p"?" on":""}" data-t="p">✏️ 문제풀이</button><button class="chip${p&&p.type==="t"?" on":""}" data-t="t">🎯 셀프테스트</button></div></div>
+    <div class="field"><label>할 일</label><input type="text" id="q_title" value="${p?esc(p.title):""}" placeholder="무엇을 공부할까?"></div>
+    <div class="field"><label>공부 방법 (선택)</label><input type="text" id="q_how" value="${p&&p.how?esc(p.how):""}" placeholder="어떻게 공부할까?"></div>
+    <button class="btn" id="q_save">${p?"수정 저장":"퀘스트 추가!"}</button>`);
+  document.querySelectorAll("#q_subj .chip").forEach(c=>c.onclick=()=>{ document.querySelectorAll("#q_subj .chip").forEach(x=>x.classList.remove("on")); c.classList.add("on"); selSid=c.dataset.s; });
+  document.querySelectorAll("#q_type .chip").forEach(c=>c.onclick=()=>{ document.querySelectorAll("#q_type .chip").forEach(x=>x.classList.remove("on")); c.classList.add("on"); });
+  $("#q_save").onclick=()=>{ const title=$("#q_title").value.trim(); if(!title){ toast("할 일을 입력해줘!"); return; } const date=$("#q_date").value||defDate; const type=document.querySelector("#q_type .chip.on").dataset.t; if(p){ p.sid=selSid; p.title=title; p.date=date; p.type=type; p.how=$("#q_how").value.trim(); } else{ S.plans.push({id:uid(),sid:selSid,date,type,title,how:$("#q_how").value.trim()}); S.bonusXp+=2; } save(); closeSheet(); render(); toast(p?"수정 완료!":"퀘스트 추가! +2 XP ⚔️"); };
+}
+function openRecord(pid){
+  const p=S.plans.find(x=>x.id===pid); if(!p)return;
+  const s=SB(p.sid); const r=recOf(p); const ty=TYPES[p.type]; let fields="";
+  if(p.type==="p"){ fields=`<div class="numrow"><div class="field"><label>푼 문제 수</label><input type="number" id="r_solved" inputmode="numeric" min="0" value="${r?r.solved:""}" placeholder="예: 15"></div><div class="field"><label>맞힌 문제 수</label><input type="number" id="r_correct" inputmode="numeric" min="0" value="${r?r.correct:""}" placeholder="예: 12"></div></div>`; }
+  else if(p.type==="c"){ const cur=r?r.stars:0; fields=`<div class="field"><label>얼마나 이해했어?</label><div class="stars" id="r_stars">${[1,2,3,4,5].map(i=>`<button data-v="${i}" class="${cur>=i?"on":""}">⭐</button>`).join("")}</div></div>`; }
+  else{ fields=`<div class="field"><label>테스트 점수 (100점 만점)</label><input type="number" id="r_score" inputmode="numeric" min="0" max="100" value="${r&&r.score!=null?r.score:""}" placeholder="예: 80"></div>`; }
+  sheetHTML(`<h4>${s.icon} ${p.title}</h4><div class="sub">${s.name} · ${ty.name}${p.how?" · 📌 "+p.how:""}</div>${fields}<div class="field"><label>공부 시간</label><div class="chiprow" id="r_mins">${[15,30,45,60,90].map(m=>`<button class="chip${r&&r.mins===m?" on":""}" data-m="${m}">${m}분</button>`).join("")}</div></div><div class="field"><label>한 줄 메모 (선택)</label><input type="text" id="r_memo" value="${r&&r.memo?esc(r.memo):""}" placeholder="오늘 배운 것, 어려웠던 점"></div><button class="btn" id="r_save">${r?"기록 수정":"완료! 기록 저장 (+"+ty.xp+" XP)"}</button>${r?`<button class="btn ghost" id="r_undo">완료 취소</button>`:""}`);
+  let stars=r?r.stars||0:0;
+  document.querySelectorAll("#r_stars button").forEach(b=>b.onclick=()=>{ stars=+b.dataset.v; document.querySelectorAll("#r_stars button").forEach(x=>x.classList.toggle("on",+x.dataset.v<=stars)); });
+  document.querySelectorAll("#r_mins .chip").forEach(c=>c.onclick=()=>{ const was=c.classList.contains("on"); document.querySelectorAll("#r_mins .chip").forEach(x=>x.classList.remove("on")); if(!was)c.classList.add("on"); });
+  $("#r_save").onclick=()=>{ const rec=r?{...r}:{};
+    if(p.type==="p"){ const sv=+($("#r_solved").value||0),cr=+($("#r_correct").value||0); if(sv<=0){ toast("푼 문제 수를 입력해줘!"); return; } if(cr>sv){ toast("맞힌 수가 더 많아요 🤔"); return; } rec.solved=sv; rec.correct=cr; }
+    else if(p.type==="c"){ if(!stars){ toast("이해도 별점을 눌러줘! ⭐"); return; } rec.stars=stars; }
+    else{ const sc=$("#r_score").value; if(sc===""){ toast("점수를 입력해줘!"); return; } rec.score=Math.max(0,Math.min(100,+sc)); }
+    const mc=document.querySelector("#r_mins .chip.on"); rec.mins=mc?+mc.dataset.m:0; rec.memo=$("#r_memo").value.trim(); rec.at=fmt(today());
+    const isNew=!r; S.recs[p.id]=rec; save(); closeSheet(); render();
+    if(isNew){ const q=qualityOf(rec,p.type); toast("+"+ty.xp+" XP · 🪙"+ty.coin+"!"+(q!=null&&q>=0.8?" 퀄리티 보너스!":"")+" 🎉"); confetti(16); const ps=plansOn(p.date); if(ps.every(x=>recOf(x))) setTimeout(()=>{toast("🌟 오늘 올클리어! +30XP +20코인!");confetti(40);},800); }
+    else toast("기록 수정 완료!"); };
+  const undo=$("#r_undo"); if(undo) undo.onclick=()=>{ delete S.recs[p.id]; save(); closeSheet(); render(); toast("완료를 취소했어요"); };
+}
+function renderShop(){
+  $("#shopBal").textContent=ST.balance;
+  const sorted=[...S.rewards].sort((a,b)=>a.cost-b.cost);
+  const next=sorted.find(r=>r.cost>ST.balance);
+  if(next){ const prev=sorted.filter(r=>r.cost<=ST.balance).map(r=>r.cost).pop()||0; const pct=Math.min(100,Math.round((ST.balance-prev)/(next.cost-prev)*100)); $("#nextReward").innerHTML=`다음 보상 <b>${next.emoji} ${next.name}</b>까지 <b>${next.cost-ST.balance}</b>코인!`; $("#nextRewardBar").style.width=pct+"%"; }
+  else if(S.rewards.length){ $("#nextReward").innerHTML=`🎉 모든 보상을 살 수 있어요!`; $("#nextRewardBar").style.width="100%"; }
+  else{ $("#nextReward").textContent=""; $("#nextRewardBar").style.width="0%"; }
+  if(!S.rewards.length){ $("#rewardList").innerHTML=`<div class="empty">아직 보상이 없어요. 부모님과 ＋로 만들어보세요!</div>`; }
+  else{ $("#rewardList").innerHTML=sorted.map(r=>{ const af=ST.balance>=r.cost; return `<div class="rwd${af?" afford":""}"><div class="rem">${r.emoji}</div><div class="rinfo"><b>${r.name}</b><span>🪙 ${r.cost} 코인</span></div><div class="racts"><button class="rbuy" data-buy="${r.id}" ${af?"":"disabled"}>${af?"교환":"부족"}</button><div class="redit"><button data-redit="${r.id}">✏️</button><button class="rdel" data-rdel="${r.id}">✕</button></div></div></div>`; }).join("");
+    document.querySelectorAll("#rewardList .rwd").forEach(el=>{ el.querySelectorAll("[data-buy]").forEach(b=>b.onclick=()=>redeemReward(b.dataset.buy)); el.querySelectorAll("[data-redit]").forEach(b=>b.onclick=()=>openRewardForm(b.dataset.redit)); el.querySelectorAll("[data-rdel]").forEach(b=>b.onclick=()=>{ if(confirm("이 보상을 삭제할까?")){ S.rewards=S.rewards.filter(x=>x.id!==b.dataset.rdel); save(); render(); } }); });
+  }
+  $("#addRewardBtn").onclick=()=>openRewardForm(null);
+  const rd=(S.redemptions||[]).slice().reverse();
+  $("#redeemList").innerHTML=rd.length?rd.map(x=>`<div class="redeemitem"><span class="rem">${x.emoji}</span><b>${x.name}</b><span>🪙${x.cost} · ${prettyDate(x.at)}</span></div>`).join(""):`<div class="empty">아직 교환한 보상이 없어요. 코인을 모아보자! 🎁</div>`;
+}
+function redeemReward(rid){ const r=S.rewards.find(x=>x.id===rid); if(!r)return; if(ST.balance<r.cost){ toast("코인이 부족해요!"); return; } if(!confirm(`"${r.emoji} ${r.name}"을(를) 🪙${r.cost}코인으로 교환할까?\n(부모님과 약속한 보상이 맞는지 확인!)`))return; S.redemptions.push({id:uid(),rewardId:r.id,name:r.name,emoji:r.emoji,cost:r.cost,at:fmt(today())}); save(); render(); toast(`${r.emoji} ${r.name} 교환 완료! 🎉`); confetti(40); }
+function openRewardForm(rid){ const r=rid?S.rewards.find(x=>x.id===rid):null; sheetHTML(`<h4>${r?"✏️ 보상 수정":"＋ 새 보상"}</h4><div class="sub">부모님과 함께 정하는 보상이에요.</div><div class="field"><label>이모지</label><input type="text" id="rw_emoji" value="${r?r.emoji:"🎁"}" maxlength="4"></div><div class="field"><label>보상 이름</label><input type="text" id="rw_name" value="${r?esc(r.name):""}" placeholder="예: 게임 30분 추가"></div><div class="field"><label>필요 코인</label><input type="number" id="rw_cost" inputmode="numeric" min="1" value="${r?r.cost:50}"></div><button class="btn" id="rw_save">${r?"수정 저장":"보상 추가!"}</button>`);
+  $("#rw_save").onclick=()=>{ const name=$("#rw_name").value.trim(); const cost=Math.max(1,Math.round(+$("#rw_cost").value||0)); const emoji=$("#rw_emoji").value.trim()||"🎁"; if(!name){ toast("이름을 입력해줘!"); return; } if(r){ r.name=name; r.cost=cost; r.emoji=emoji; } else { S.rewards.push({id:uid(),name,cost,emoji}); } save(); closeSheet(); render(); toast(r?"수정 완료!":"보상 추가! 🎁"); };
+}
+function renderGrowth(){
+  const pct=ST.total?Math.round(ST.done/ST.total*100):0; $("#allProg").textContent=ST.done+" / "+ST.total+" ("+pct+"%)"; $("#allProgBar").style.width=pct+"%";
+  $("#gMins").textContent=ST.mins>=60?Math.floor(ST.mins/60)+"h "+(ST.mins%60)+"m":ST.mins+"분";
+  $("#gAcc").textContent=ST.avgAcc!=null?Math.round(ST.avgAcc)+"%":"-"; $("#gStar").textContent=ST.avgStar!=null?ST.avgStar.toFixed(1)+"/5":"-"; $("#gTest").textContent=ST.avgTest!=null?Math.round(ST.avgTest)+"점":"-";
+  if(!S.subjects.length){ $("#growthCharts").innerHTML=`<div class="empty">과목을 추가하면 곡선이 그려져요</div>`; }
+  else $("#growthCharts").innerHTML=S.subjects.map(s=>{ const n=S.plans.filter(p=>p.sid===s.id).length; if(!n) return `<div class="subj"><div class="row1"><span>${s.icon}</span><span class="name">${s.name}</span><span class="nums">계획을 세우면 곡선이 그려져요</span></div></div>`; return `<div class="subj"><div class="row1"><span style="font-size:1.05rem">${s.icon}</span><span class="name">${s.name}</span><span class="nums">예상 <b>${estScore(s.id,fmt(today()))}</b> / 목표 ${s.goal}</span></div><div class="chartwrap">${chartSVG(s)}</div></div>`; }).join("");
+  renderTimeChart(); renderBadgesUI(); renderMemos();
+}
+function chartSVG(s){
+  const W=320,H=110,L=30,R=8,T=10,B=18; const t=today(); const lastDay=Math.max(0,Math.min(TOTAL-1,dayIndex(t)));
+  const pts=[]; for(let i=0;i<=lastDay;i++){ const dk=fmt(new Date(VS.getTime()+i*DAY_MS)); pts.push([i,estScore(s.id,dk)]); }
+  const tests=S.plans.filter(p=>p.sid===s.id&&p.type==="t"&&recOf(p)&&recOf(p).score!=null).map(p=>[Math.max(0,Math.min(TOTAL-1,dayIndex(parse(p.date)))),recOf(p).score]);
+  let lo=Math.min(s.cur,...tests.map(x=>x[1]))-6, hi=Math.max(s.goal,...pts.map(x=>x[1]),...tests.map(x=>x[1]))+6; if(!(hi>lo)) hi=lo+10;
+  const X=i=>L+(W-L-R)*i/Math.max(1,TOTAL-1), Y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  const line=pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join(" ");
+  const area=line+` L${X(pts[pts.length-1][0]).toFixed(1)} ${(H-B)} L${X(0).toFixed(1)} ${(H-B)} Z`;
+  const dots=tests.map(x=>`<circle cx="${X(x[0]).toFixed(1)}" cy="${Y(x[1]).toFixed(1)}" r="4" fill="#ff6b9d" stroke="#fff" stroke-width="1.2"/><text x="${X(x[0]).toFixed(1)}" y="${(Y(x[1])-7).toFixed(1)}" font-size="8" fill="#ff9dbd" text-anchor="middle" font-weight="700">${x[1]}</text>`).join("");
+  const last=pts[pts.length-1];
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg"><line x1="${L}" y1="${Y(s.goal)}" x2="${W-R}" y2="${Y(s.goal)}" stroke="${s.color}" stroke-width="1" stroke-dasharray="4 3" opacity=".7"/><text x="${W-R}" y="${Y(s.goal)-4}" font-size="8" fill="${s.color}" text-anchor="end">목표 ${s.goal}</text><line x1="${L}" y1="${Y(s.cur)}" x2="${W-R}" y2="${Y(s.cur)}" stroke="#5a6296" stroke-width="1" stroke-dasharray="2 3" opacity=".6"/><text x="${L}" y="${Y(s.cur)+10}" font-size="8" fill="#8a91c0">현재 ${s.cur}</text><path d="${area}" fill="${s.color}" opacity=".12"/><path d="${line}" fill="none" stroke="${s.color}" stroke-width="2.2" stroke-linecap="round"/><circle cx="${X(last[0]).toFixed(1)}" cy="${Y(last[1]).toFixed(1)}" r="4.2" fill="${s.color}" stroke="#fff" stroke-width="1.4"/><text x="${X(last[0]).toFixed(1)}" y="${(Y(last[1])-8).toFixed(1)}" font-size="9" fill="#fff" text-anchor="middle" font-weight="800">${last[1]}</text>${dots}</svg>`;
+}
+function renderTimeChart(){
+  const t=today(); const days=[];
+  for(let i=13;i>=0;i--){ const d=new Date(t.getTime()-i*DAY_MS); const dk=fmt(d); let m=0; S.plans.forEach(p=>{ const r=recOf(p); if(r&&r.at===dk&&r.mins) m+=r.mins; }); days.push([d,m]); }
+  const max=Math.max(60,...days.map(x=>x[1])); const W=320,H=90,B=16,T=8; const bw=(W-10)/14; let bars="";
+  days.forEach((x,i)=>{ const h=(H-B-T)*x[1]/max; const cx=5+i*bw; bars+=`<rect x="${(cx+2).toFixed(1)}" y="${(H-B-h).toFixed(1)}" width="${(bw-4).toFixed(1)}" height="${Math.max(1.5,h).toFixed(1)}" rx="3" fill="${x[1]?"#7c6cff":"#252b52"}"/>`; if(x[1]) bars+=`<text x="${(cx+bw/2).toFixed(1)}" y="${(H-B-h-3).toFixed(1)}" font-size="7" fill="#b4aaff" text-anchor="middle">${x[1]}</text>`; bars+=`<text x="${(cx+bw/2).toFixed(1)}" y="${H-4}" font-size="7" fill="#8a91c0" text-anchor="middle">${x[0].getDate()}</text>`; });
+  $("#timeChart").innerHTML=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${bars}</svg>`;
+}
+function renderMemos(){
+  const memos=[]; S.plans.forEach(p=>{ const r=recOf(p); if(r&&r.memo) memos.push({date:r.at||p.date,sid:p.sid,title:p.title,memo:r.memo}); });
+  memos.sort((a,b)=>a.date<b.date?1:-1);
+  $("#memoList").innerHTML=memos.length?memos.slice(0,8).map(m=>`<div class="memo"><b>${SB(m.sid).icon} ${m.title}</b> <span>· ${prettyDate(m.date)}</span><p>💬 ${m.memo}</p></div>`).join(""):`<div class="empty">퀘스트 완료 때 메모를 남기면 여기 쌓여요 📔</div>`;
+}
+function renderBadgesUI(){ $("#badgeGrid").innerHTML=BADGES.map(b=>{ const on=S.badges.includes(b.id); return `<div class="badge${on?" on":""}"><div class="ic">${b.ic}</div><b>${b.name}</b><span>${b.desc}</span></div>`; }).join(""); }
+function checkBadges(){
+  const earn=[]; const need=(id,c)=>{ if(c&&!S.badges.includes(id)){S.badges.push(id);earn.push(id);} };
+  need("plan5",S.plans.length>=5); need("first",ST.done>=1); need("streak3",ST.streak>=3); need("streak7",ST.streak>=7); need("streak14",ST.streak>=14); need("perfect1",ST.perfect>=1); need("perfect5",ST.perfect>=5); need("test80",S.plans.some(p=>p.type==="t"&&recOf(p)&&recOf(p).score>=80)); need("half",ST.total>=10&&ST.done>=ST.total*0.5); need("master",ST.total>=10&&ST.done>=ST.total*0.9); need("career",!!S.quizResult);
+  if(earn.length){ save(); const b=BADGES.find(x=>x.id===earn[0]); setTimeout(()=>{toast("🏅 배지 획득: "+b.name+"!");confetti(30);renderBadgesUI();},1200); }
+}
+let quizIdx=-1, quizScore={};
+function renderCareer(){
+  const hi=S.profile.level==="고";
+  $("#careerTag").textContent=hi?"계열·전공 탐색":"진로·적성 탐색";
+  $("#careerIntro").innerHTML=hi?"📌 곧 <b>문·이과 및 계열 선택, 진로</b>를 정하게 돼요. 방학 동안 나의 흥미와 강점을 살펴보자!":"📌 나에게 맞는 <b>진로와 계열</b>을 미리 탐색해보면 고등학교 과목·동아리 선택에 큰 도움이 돼요!";
+  $("#trackList").innerHTML=Object.entries(TRACKS).map(([k,tr])=>{ const read=S.readTracks.includes(k); return `<div class="gcard" data-tk="${k}" style="cursor:pointer${read?";border:1px solid rgba(74,222,128,.35)":""}"><span class="gg">${tr.icon} ${tr.name} ${read?"✓ 읽음":""}</span><p>집중 과목: <b>${tr.focus}</b><br>${tr.tip}</p></div>`; }).join("");
+  document.querySelectorAll("#trackList .gcard").forEach(el=>{ el.onclick=()=>{ const k=el.dataset.tk; if(!S.readTracks.includes(k)){ S.readTracks.push(k); S.bonusXp+=10; toast("+10 XP · 계열 탐색! 🧭"); save(); render(); } }; });
+  renderQuiz();
+}
+function renderQuiz(){
+  const area=$("#quizArea");
+  if(S.quizResult&&quizIdx<0){ const tr=TRACKS[S.quizResult.top]; const tr2=S.quizResult.second?TRACKS[S.quizResult.second]:null; const hi=S.profile.level==="고";
+    area.innerHTML=`<div class="center mt8"><div class="big">${tr.icon}</div><div style="font-weight:900;font-size:1.1rem;margin:6px 0">나의 관심 계열: ${tr.name}</div></div><div class="result-combo"><b>🎯 집중하면 좋은 과목</b><p>${tr.focus}</p><b style="display:block;margin-top:8px">📗 학습 팁</b><p>${tr.tip}</p><p style="margin-top:8px">${hi?"이 계열이 마음에 든다면 관련 과목에 방학 시간을 조금 더 투자해보세요.":"관심이 있다면 관련 동아리·독서·체험을 찾아보면 좋아요."}</p></div>${tr2?`<div class="gcard"><b>${tr2.icon} 두 번째 관심: ${tr2.name}</b><p>집중 과목: ${tr2.focus}</p></div>`:""}<div class="notice mt8">이건 참고용이에요! 여러 계열을 읽어보고 천천히 탐색하면 돼요. 😊</div><button class="btn ghost" onclick="startQuiz()">다시 해보기 🔄</button>`; return; }
+  if(quizIdx<0){ area.innerHTML=`<div class="center" style="padding:8px 0 4px"><div class="big">🔮</div><p style="font-size:.9rem;color:var(--sub);margin:8px 0 4px;word-break:keep-all">8가지 질문으로 나에게 맞는 진로·계열을 찾아보자!</p></div><button class="btn" onclick="startQuiz()">진로 탐색 퀘스트 시작! (+50 XP)</button>`; return; }
+  if(quizIdx>=QUIZ.length){ const sorted=Object.entries(quizScore).sort((a,b)=>b[1]-a[1]); const top=sorted[0]?sorted[0][0]:"hum"; const second=(sorted[1]&&sorted[1][1]>0)?sorted[1][0]:null; const isFirst=!S.quizResult; S.quizResult={top,second}; if(isFirst){ S.bonusXp+=50; toast("+50 XP · 진로 탐색 완료! 🧭"); confetti(30); } quizIdx=-1; save(); render(); return; }
+  const q=QUIZ[quizIdx];
+  area.innerHTML=`<div style="font-size:.72rem;color:var(--sub);margin-bottom:8px">질문 ${quizIdx+1} / ${QUIZ.length}</div><div class="quiz-q">${q.q}</div>`+q.opts.map(o=>`<button class="quiz-opt" onclick="answerQuiz('${o[1]}')">${o[0]}</button>`).join("");
+}
+window.startQuiz=function(){ quizIdx=0; quizScore={}; renderQuiz(); };
+window.answerQuiz=function(t){ quizScore[t]=(quizScore[t]||0)+1; quizIdx++; renderQuiz(); };
+
+function todayLogText(){
+  const tk=fmt(today()); const ps=plansOn(tk); const doneP=ps.filter(p=>recOf(p));
+  const lines=["📅 "+prettyDate(tk)+" "+(S.profile.name||"나")+"의 방학 퀘스트 기록"]; let mins=0;
+  doneP.forEach(p=>{ const r=recOf(p); if(r.mins) mins+=r.mins; });
+  lines.push("✅ 완료 "+doneP.length+"/"+ps.length+(mins?" · ⏱ "+mins+"분":""));
+  ps.forEach(p=>{ const s=SB(p.sid); const r=recOf(p); const ty=TYPES[p.type]; if(!r){ lines.push("- [ ] ["+s.name+"·"+ty.name+"] "+p.title); return; } const parts=[]; if(p.type==="p"&&r.solved>0) parts.push("정답률 "+Math.round(r.correct/r.solved*100)+"%"); if(p.type==="c"&&r.stars) parts.push("이해도 "+r.stars+"/5"); if(p.type==="t"&&r.score!=null) parts.push(r.score+"점"); if(r.mins) parts.push(r.mins+"분"); lines.push("- [x] ["+s.name+"·"+ty.name+"] "+p.title+(parts.length?" — "+parts.join(", "):"")); if(r.memo) lines.push("    💬 "+r.memo); });
+  return lines.join("\n");
+}
+function copyText(txt){ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(()=>toast("복사 완료! 📋"),()=>fbCopy(txt)); } else fbCopy(txt); }
+function fbCopy(txt){ const ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); try{ document.execCommand("copy"); toast("복사 완료! 📋"); }catch(e){ toast("복사 실패 😢"); } ta.remove(); }
+
+function openSettings(){
+  const p=S.profile;
+  sheetHTML(`<h4>⚙️ 설정</h4><div class="sub">이름·방학 기간·과목을 언제든 바꿀 수 있어요.</div><div class="field"><label>이름 / 별명</label><input type="text" id="set_name" value="${esc(p.name||"")}"></div><div class="field"><label>학교급</label><div class="chiprow" id="set_level"><button class="chip${p.level==="중"?" on":""}" data-l="중">중학생</button><button class="chip${p.level==="고"?" on":""}" data-l="고">고등학생</button></div></div><div class="numrow"><div class="field"><label>방학 시작</label><input type="date" id="set_start" value="${p.vacStart}"></div><div class="field"><label>방학 종료</label><input type="date" id="set_end" value="${p.vacEnd}"></div></div><button class="btn" id="set_save">저장</button><h4 style="margin-top:20px">📚 과목 관리</h4><div id="set_subjects" style="margin:8px 0"></div><button class="btn ghost" id="set_addSubj">＋ 과목 추가</button><div style="height:14px"></div><button class="btn danger" id="set_reset">전체 초기화 (처음부터 다시)</button>`);
+  let lvl=p.level;
+  document.querySelectorAll("#set_level .chip").forEach(c=>c.onclick=()=>{ document.querySelectorAll("#set_level .chip").forEach(x=>x.classList.remove("on")); c.classList.add("on"); lvl=c.dataset.l; });
+  const rss=()=>{ $("#set_subjects").innerHTML=S.subjects.length?S.subjects.map(s=>`<div class="subrow"><span style="font-size:1.1rem">${s.icon}</span><span class="sn">${s.name} <span class="sm">(현재 ${s.cur}→목표 ${s.goal})</span></span><button data-e="${s.id}">✏️</button><button class="sdel" data-d="${s.id}">✕</button></div>`).join(""):`<div class="empty">과목이 없어요</div>`; document.querySelectorAll("#set_subjects [data-e]").forEach(b=>b.onclick=()=>openSubjectForm(b.dataset.e,true)); document.querySelectorAll("#set_subjects [data-d]").forEach(b=>b.onclick=()=>{ if(confirm("이 과목과 관련 계획을 삭제할까?")){ S.subjects=S.subjects.filter(x=>x.id!==b.dataset.d); S.plans=S.plans.filter(p=>p.sid!==b.dataset.d); save(); rss(); render(); } }); };
+  rss();
+  $("#set_save").onclick=()=>{ p.name=$("#set_name").value.trim(); p.level=lvl; const st=$("#set_start").value, en=$("#set_end").value; if(st) p.vacStart=st; if(en) p.vacEnd=en; save(); recalcDates(); closeSheet(); render(); toast("설정 저장 완료!"); };
+  $("#set_addSubj").onclick=()=>openSubjectForm(null,true);
+  $("#set_reset").onclick=()=>{ if(confirm("모든 기록이 삭제되고 처음 화면으로 돌아가요. 계속할까?")){ localStorage.removeItem(KEY); location.reload(); } };
+}
+function openSubjectForm(sid,fromSettings){
+  const s=sid?S.subjects.find(x=>x.id===sid):null;
+  sheetHTML(`<h4>${s?"✏️ 과목 점수 · 정보 수정":"＋ 새 과목"}</h4><div class="sub">직전 시험 점수(현재)와 이번 방학 목표 점수를 입력해요.</div><div class="field"><label>이모지</label><input type="text" id="sf_icon" value="${s?s.icon:"📘"}" maxlength="4"></div><div class="field"><label>과목 이름</label><input type="text" id="sf_name" value="${s?esc(s.name):""}" placeholder="예: 국어"></div><div class="numrow"><div class="field"><label>현재 점수 (직전 시험)</label><input type="number" id="sf_cur" inputmode="numeric" min="0" max="100" value="${s?s.cur:70}"></div><div class="field"><label>목표 점수</label><input type="number" id="sf_goal" inputmode="numeric" min="0" max="100" value="${s?s.goal:90}"></div></div><button class="btn" id="sf_save">${s?"수정 저장":"과목 추가"}</button>`);
+  $("#sf_save").onclick=()=>{ const name=$("#sf_name").value.trim(); if(!name){ toast("과목 이름을 입력해줘!"); return; } const icon=$("#sf_icon").value.trim()||"📘"; const cur=Math.max(0,Math.min(100,+$("#sf_cur").value||0)); const goal=Math.max(0,Math.min(100,+$("#sf_goal").value||0)); if(s){ s.name=name; s.icon=icon; s.cur=cur; s.goal=goal; } else { const ns=newSubject(name,icon); ns.cur=cur; ns.goal=goal; S.subjects.push(ns); } save(); closeSheet(); render(); if(fromSettings) openSettings(); toast(s?"점수 수정 완료!":"과목 추가 완료!"); };
+}
+
+function esc(s){ return (s||"").replace(/"/g,"&quot;"); }
+function sheetHTML(html){ $("#sheetBody").innerHTML=html; $("#overlay").classList.add("show"); $("#sheet").classList.add("show"); }
+function closeSheet(){ $("#overlay").classList.remove("show"); $("#sheet").classList.remove("show"); }
+$("#overlay").onclick=closeSheet;
+let toastTimer;
+function toast(msg){ const el=$("#toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.classList.remove("show"),2200); }
+function confetti(n){ const em=["🎉","✨","⭐","🎊","💫","🌟"]; for(let i=0;i<n;i++){ const s=document.createElement("div"); s.className="confetti"; s.textContent=em[Math.floor(Math.random()*em.length)]; s.style.left=Math.random()*100+"vw"; s.style.animationDuration=(1.6+Math.random()*1.6)+"s"; s.style.fontSize=(0.8+Math.random()*1)+"rem"; document.body.appendChild(s); setTimeout(()=>s.remove(),3400); } }
+function switchView(v){ document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x.dataset.v===v)); document.querySelectorAll(".view").forEach(x=>x.classList.remove("on")); $("#view-"+v).classList.add("on"); window.scrollTo({top:0}); }
+document.querySelectorAll("nav button").forEach(b=>{ b.onclick=()=>switchView(b.dataset.v); });
+$("#gearBtn").onclick=openSettings;
+$("#copyTodayBtn").onclick=()=>copyText(todayLogText());
+$("#expBtn").onclick=()=>{ const blob=new Blob([JSON.stringify(S,null,1)],{type:"application/json"}); const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="vacation-planner-backup-"+fmt(today())+".json"; document.body.appendChild(a); a.click(); a.remove(); toast("백업 저장! 💾"); };
+$("#impBtn").onclick=()=>$("#impFile").click();
+$("#impFile").onchange=e=>{ const f=e.target.files[0]; if(!f)return; const rd=new FileReader(); rd.onload=()=>{ try{ let s=JSON.parse(rd.result); if(!s||!s.profile||!Array.isArray(s.plans)) throw 0; if(!confirm("백업을 불러오면 지금 기록이 대체돼요. 계속할까?"))return; S=fillDefaults(s); save(); recalcDates(); render(); toast("백업 불러오기 완료! 📂"); }catch(err){ toast("올바른 백업 파일이 아니에요 😢"); } e.target.value=""; }; rd.readAsText(f); };
+
+let obLevel="중", obSubs=[];
+function initOnboard(){
+  const t=today(); $("#ob_start").value=fmt(t); $("#ob_end").value=fmt(new Date(t.getTime()+30*DAY_MS));
+  renderObSubjects();
+  document.querySelectorAll("#ob_level .chip").forEach(c=>c.onclick=()=>{ document.querySelectorAll("#ob_level .chip").forEach(x=>x.classList.remove("on")); c.classList.add("on"); obLevel=c.dataset.l; obSubs=[]; renderObSubjects(); });
+  $("#ob_addSubj").onclick=()=>{ const v=$("#ob_custom").value.trim(); if(!v)return; if(obSubs.some(x=>x.name===v)){ toast("이미 있는 과목이에요"); return; } obSubs.push({name:v,icon:"📘",on:true,cur:70,goal:90}); $("#ob_custom").value=""; renderObSubjects(); };
+  $("#ob_go").onclick=finishOnboard;
+}
+function renderObSubjects(){
+  const presets=PRESETS[obLevel]; const map={};
+  presets.forEach(([n,ic])=>{ const ex=obSubs.find(x=>x.name===n); map[n]={name:n,icon:ic,on:ex?ex.on:["국어","영어","수학"].includes(n),cur:ex?ex.cur:70,goal:ex?ex.goal:90}; });
+  obSubs.forEach(x=>{ if(!map[x.name]) map[x.name]={name:x.name,icon:x.icon,on:x.on,cur:x.cur!=null?x.cur:70,goal:x.goal!=null?x.goal:90}; });
+  const arr=Object.values(map);
+  $("#ob_subjects").innerHTML=arr.map(s=>`<button class="chip${s.on?" on":""}" data-n="${esc(s.name)}">${s.icon} ${s.name}</button>`).join("");
+  obSubs=arr.map(s=>({name:s.name,icon:s.icon,on:s.on,cur:s.cur,goal:s.goal}));
+  document.querySelectorAll("#ob_subjects .chip").forEach(b=>b.onclick=()=>{ const n=b.dataset.n; const it=obSubs.find(x=>x.name===n); it.on=!it.on; b.classList.toggle("on",it.on); renderObScores(); });
+  renderObScores();
+}
+function renderObScores(){
+  const wrap=$("#ob_scoreWrap"); const chosen=obSubs.filter(x=>x.on);
+  if(!chosen.length){ wrap.style.display="none"; $("#ob_scores").innerHTML=""; return; }
+  wrap.style.display="";
+  $("#ob_scores").innerHTML=chosen.map(s=>`<div class="scorerow" data-n="${esc(s.name)}"><span style="font-size:1.05rem">${s.icon}</span><span class="snm">${s.name}</span><div class="sin"><span class="lbl">현재</span><input type="number" inputmode="numeric" min="0" max="100" data-k="cur" value="${s.cur}"></div><span class="arr">→</span><div class="sin"><span class="lbl">목표</span><input type="number" inputmode="numeric" min="0" max="100" data-k="goal" value="${s.goal}"></div></div>`).join("");
+  document.querySelectorAll("#ob_scores .scorerow").forEach(row=>{ const n=row.dataset.n; row.querySelectorAll("input").forEach(inp=>{ inp.oninput=()=>{ const it=obSubs.find(x=>x.name===n); if(it){ const v=Math.max(0,Math.min(100,+inp.value||0)); it[inp.dataset.k]=v; } }; }); });
+}
+function finishOnboard(){
+  const name=$("#ob_name").value.trim(); const grade=$("#ob_grade").value; const st=$("#ob_start").value, en=$("#ob_end").value;
+  const chosen=obSubs.filter(x=>x.on);
+  if(!chosen.length){ toast("과목을 하나 이상 선택해줘!"); return; }
+  if(!st||!en||parse(en)<parse(st)){ toast("방학 기간을 올바르게 입력해줘!"); return; }
+  S.profile={name,level:obLevel,grade:+grade,vacStart:st,vacEnd:en,setup:true};
+  S.subjects=chosen.map((c,i)=>({id:uid()+i,name:c.name,icon:c.icon,color:PALETTE[i%PALETTE.length],cur:c.cur!=null?c.cur:70,goal:c.goal!=null?c.goal:90}));
+  recalcDates();
+  if($("#ob_seed").checked){ S.subjects.forEach(sub=>{ buildSeedPlans(sub,VS).forEach(p=>S.plans.push(p)); }); }
+  save();
+  $("#onboard").classList.remove("show"); $("#app").style.display=""; $("#nav").style.display="";
+  render(); toast("환영해요, "+(name||"친구")+"! 🎉"); confetti(40);
+}
+
+recalcDates();
+if(S.profile&&S.profile.setup){ $("#app").style.display=""; $("#nav").style.display=""; render(); }
+else{ $("#onboard").classList.add("show"); initOnboard(); }
+</script>
+</body>
+</html>
